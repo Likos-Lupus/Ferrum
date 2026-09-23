@@ -1,0 +1,351 @@
+# ============================================================
+# Operating Systems
+# ============================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+
+# ============================================================
+# Editors / IDEs
+# ============================================================
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+.history/
+*.vsix
+
+
+# JetBrains
+.idea/
+*.iml
+*.ipr
+*.iws
+
+.idea_modules/
+out/
+gen/
+
+# JetBrains plugins / generated files
+atlassian-ide-plugin.xml
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+
+# Eclipse
+.metadata/
+bin/
+tmp/
+
+.settings/
+.loadpath
+.recommenders/
+.externalToolBuilders/
+
+*.launch
+*.pydevproject
+
+# Eclipse C/C++
+.cproject
+.autotools
+
+# Eclipse Java
+.project
+.classpath
+.factorypath
+
+# Eclipse PHP
+.buildpath
+
+# sbteclipse
+.target
+
+# Tern
+.tern-project
+
+# TeXlipse
+.texlipse
+
+# Spring Tool Suite
+.springBeans
+
+# Annotation Processing
+.apt_generated/
+.apt_generated_test/
+
+# Scala IDE
+.cache-main
+.scala_dependencies
+.worksheet
+
+
+# Vim
+
+# Swap files
+[._]*.s[a-v][a-z]
+!*.svg
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Sessions
+Session.vim
+Sessionx.vim
+
+# Temporary files
+.netrwhist
+
+# Tags
+tags
+
+# Persistent undo
+[._]*.un~
+
+
+# ============================================================
+# Common Generated / Temporary Files
+# ============================================================
+
+# Logs
+*.log
+
+# Temporary / backup files
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# Local configuration
+local.properties
+
+
+# ============================================================
+# Package / Archive Files
+# ============================================================
+
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+
+# ============================================================
+# JVM / Java / Kotlin / Scala
+# ============================================================
+
+# Compiled class files
+*.class
+
+# BlueJ
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# JVM crash logs
+hs_err_pid*
+replay_pid*
+
+
+# ============================================================
+# Maven
+# ============================================================
+
+target/
+
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+.mvn/timing.properties
+
+# Maven Wrapper binary
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
+
+
+# ============================================================
+# Gradle
+# ============================================================
+
+.gradle/
+**/build/
+!src/**/build/
+
+gradle-app.setting
+.gradletasknamecache
+
+# Keep Gradle Wrapper files
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+
+# ============================================================
+# CMake
+# ============================================================
+
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+
+_deps/
+CMakeUserPresets.json
+cmake-build-*/
+
+
+# ============================================================
+# C / C++
+# ============================================================
+
+# Dependencies
+*.d
+
+# Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.ko
+*.elf
+
+# Precompiled headers
+*.gch
+*.pch
+
+# Dynamic libraries
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Fortran module files
+*.mod
+*.smod
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel module compile results
+*.mod*
+*.cmd
+.tmp_versions/
+
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+
+# ============================================================
+# Rust
+# ============================================================
+
+# Cargo build output
+debug/
+
+# Remove this rule for applications if Cargo.lock should be committed.
+# For libraries, ignoring Cargo.lock may be appropriate depending on policy.
+Cargo.lock
+
+# rustfmt backup files
+**/*.rs.bk
+
+
+# ============================================================
+# Ferrum Local-Only Material (must never be committed)
+# ============================================================
+
+# Agent-facing implementation baseline; kept local, untracked.
+Ferrum-可执行实施方案包/
+opencode.json
