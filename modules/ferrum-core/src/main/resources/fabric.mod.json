@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "Ferrum native core runtime.",
+  "license": "MIT",
+  "environment": "*",
+  "mixins": [
+    "ferrum-core.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "${minecraft}",
+    "java": ">=25"
+  }
+}

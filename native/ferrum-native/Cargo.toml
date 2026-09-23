@@ -1,0 +1,15 @@
+[package]
+name = "ferrum-native"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Ferrum native kernel with a Minecraft-independent C ABI."
+
+[lib]
+name = "ferrum"
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+lto = true
+codegen-units = 1

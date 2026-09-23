@@ -24,7 +24,7 @@ allocation-heavy work from the JVM into a **Rust native kernel** accessed throug
 - Native: a single `libferrum` with a versioned, Minecraft-independent C ABI.
 - Java fallback (vanilla behavior) is always retained; native is never the only implementation.
 - Java baseline: JSpecify `@NullMarked` + NullAway/Error Prone, **Jackson 3**, **JUnit 6 /
-  Jupiter**, **Architectury Loom**.
+  Jupiter**, **Stonecutter** (Minecraft version axis) + **Architectury Loom** (loader build).
 
 ### Core philosophy
 
@@ -51,6 +51,9 @@ together with this file. Accepted records are superseded by new ADRs, never edit
 | [0006](docs/adr/0006-noise-and-float-bit-exactness.md)          | Noise and float bit-exactness policy                                              |
 | [0007](docs/adr/0007-performance-multipliers-are-hypotheses.md) | Performance multipliers are hypotheses                                            |
 | [0008](docs/adr/0008-mvp-and-v1-definition-of-done.md)         | MVP and v1 Definition of Done                                                     |
+| [0009](docs/adr/0009-stonecutter-version-axis.md)               | Stonecutter version axis                                                          |
+| [0010](docs/adr/0010-stonecutter-controller-and-26x-toolchain.md) | Stonecutter module controller and the 26.x toolchain                              |
+| [0011](docs/adr/0011-error-prone-and-nullaway-pins.md)          | Error Prone and NullAway pins                                                     |
 
 ---
 
@@ -127,8 +130,9 @@ These rules apply to every agent working in this repository.
 
 3. **Local-only reference material must not enter git.**
     - Never `git add` / commit / stage anything under the untracked `Ferrum-可执行实施方案包/`
-      directory or `.idea/`.
-    - Keep such material local and untracked.
+      directory.
+    - `.idea/` is ignored except the shared `.idea/inspectionProfiles/` and `.idea/codeStyles/`
+      settings, which may be tracked; keep every other IDE file out of git.
 
 4. **Do not commit unless explicitly asked.** Inspect `git status` / `git diff` first; stage only
    intended files.
@@ -161,10 +165,15 @@ These rules apply to every agent working in this repository.
 - Java 25, no preview features in release builds; prefer records/sealed types/pattern matching, but
   keep hot paths on predictable primitives and explicit loops. No raw types, wildcard imports, or
   `@SuppressWarnings("all")`.
+- The Minecraft version axis (1.21.1 / 26.1.2) is managed by **Stonecutter** over a single source tree
+  per module; the loader build/remap/run environment is **Architectury Loom**. Canonical active
+  target is `26.1.2-fabric`; all four targets are checked in aggregate. Stonecutter conditions must
+  not reach `java-shared`, the FFM ABI, the Rust kernel, or pure algorithm code.
 - Fabric + NeoForge share the `common` design via **Architectury Loom**; Architectury API only at
   low-frequency loader glue boundaries, never in FFM/algorithm hot paths.
 
-Full detail: ADR-0001 (Java quality freeze, JQ-01 through JQ-04).
+Full detail: ADR-0001 (Java quality freeze, JQ-01 through JQ-04) and ADR-0009 (Stonecutter version
+axis).
 
 ---
 
@@ -178,8 +187,8 @@ ferrum/
 ├─ build-logic/            # Gradle convention plugins
 ├─ native/ferrum-native/   # Rust kernel: lib.rs, abi.rs, core.rs, nbt/, codec/, noise/ ...
 ├─ java-shared/            # core-runtime, testkit, module-api
-├─ modules/                # ferrum-core, ferrum-nbt, ... each with mc-1.21.1/ and mc-26.1.2/
-├─ integration-tests/      # mc-1.21.1/, mc-26.1.2/
+├─ modules/                # ferrum-core, ferrum-nbt, ... one src/ tree + Stonecutter targets
+├─ integration-tests/      # fixtures/{1.21.1,26.1.2}/ + scenarios/ (target-aware)
 ├─ benchmark-worlds/       # scripts/generators only, no large worlds
 ├─ docs/
 └─ scripts/                # build-native, package-native, run-differential, run-benchmarks
@@ -188,7 +197,8 @@ ferrum/
 Dependency direction (reverse dependencies forbidden):
 
 ```text
-Loader entrypoint → MC version adapter/Mixin → module-api + core-runtime → FFM ABI → libferrum
+Stonecutter target (<mc>-<loader>) → Loader entrypoint → MC version adapter/Mixin
+    → module-api + core-runtime → FFM ABI → libferrum
 ```
 
 The native layer knows nothing about loaders; `core-runtime` knows nothing about Minecraft classes.

@@ -66,8 +66,12 @@ $RECYCLE.BIN/
 *.vsix
 
 
-# JetBrains
-.idea/
+# JetBrains: ignore everything inside .idea except shared inspection and code-style settings
+.idea/*
+!.idea/inspectionProfiles/
+!.idea/inspectionProfiles/**
+!.idea/codeStyles/
+!.idea/codeStyles/**
 *.iml
 *.ipr
 *.iws
@@ -334,13 +338,22 @@ dkms.conf
 # Cargo build output
 debug/
 
-# Remove this rule for applications if Cargo.lock should be committed.
-# For libraries, ignoring Cargo.lock may be appropriate depending on policy.
-Cargo.lock
+# Cargo.lock is committed for reproducible native builds.
+# (Do not ignore it; see ADR-0001 / native build reproducibility.)
 
 # rustfmt backup files
 **/*.rs.bk
 
+
+# ============================================================
+# Minecraft / Stonecutter / Loom
+# ============================================================
+
+run/
+
+# Mod metadata is source, not build output (the generic *.mod* rule must not drop it).
+!fabric.mod.json
+!*.mods.toml
 
 # ============================================================
 # Ferrum Local-Only Material (must never be committed)

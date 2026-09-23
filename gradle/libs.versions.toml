@@ -1,0 +1,33 @@
+[versions]
+jspecify = "1.0.0"
+errorprone-core = "2.48.0"
+errorprone-plugin = "5.1.1"
+nullaway = "0.12.7"
+jackson = "3.2.3"
+junit = "6.1.3"
+architectury-loom = "1.17.493"
+architectury-plugin = "3.5.170"
+fabric-loader = "0.19.5"
+fabricApi1211 = "0.116.17+1.21.1"
+fabricApi2612 = "0.155.3+26.1.2"
+neoforge1211 = "21.1.251"
+neoforge2612 = "26.1.2.109"
+
+[libraries]
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone-core" }
+errorprone-plugin = { module = "net.ltgt.errorprone:net.ltgt.errorprone.gradle.plugin", version.ref = "errorprone-plugin" }
+nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
+jackson-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson" }
+jackson-databind = { module = "tools.jackson.core:jackson-databind" }
+jackson-dataformat-yaml = { module = "tools.jackson.dataformat:jackson-dataformat-yaml" }
+jackson-dataformat-toml = { module = "tools.jackson.dataformat:jackson-dataformat-toml" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+
+[plugins]
+errorprone = { id = "net.ltgt.errorprone", version.ref = "errorprone-plugin" }
+architectury-loom = { id = "dev.architectury.loom", version.ref = "architectury-loom" }
+architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }
