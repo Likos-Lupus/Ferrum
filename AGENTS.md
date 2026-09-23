@@ -50,6 +50,7 @@ together with this file. Accepted records are superseded by new ADRs, never edit
 | [0005](docs/adr/0005-native-platform-matrix.md)                 | Native platform support matrix                                                    |
 | [0006](docs/adr/0006-noise-and-float-bit-exactness.md)          | Noise and float bit-exactness policy                                              |
 | [0007](docs/adr/0007-performance-multipliers-are-hypotheses.md) | Performance multipliers are hypotheses                                            |
+| [0008](docs/adr/0008-mvp-and-v1-definition-of-done.md)         | MVP and v1 Definition of Done                                                     |
 
 ---
 
@@ -58,7 +59,7 @@ together with this file. Accepted records are superseded by new ADRs, never edit
 ### Execution order
 
 1. Freeze the implementation rules (ADR-0001).
-2. Define scope and the MVP/v1 Definition of Done.
+2. Define scope and the MVP/v1 Definition of Done (ADR-0008).
 3. Scaffold the repository layout and build chain.
 4. Build the cross-language foundation: ABI/error model and memory/thread lifecycle.
 5. Implement modules strictly in dependency order: **Core → NBT → Codec/Palette → Noise →

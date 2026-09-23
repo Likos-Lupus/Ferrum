@@ -53,3 +53,4 @@ All files in this directory are written in English.
 | [0005](0005-native-platform-matrix.md)                 | Native platform support matrix         | Accepted |
 | [0006](0006-noise-and-float-bit-exactness.md)          | Noise and float bit-exactness policy   | Accepted |
 | [0007](0007-performance-multipliers-are-hypotheses.md) | Performance multipliers are hypotheses | Accepted |
+| [0008](0008-mvp-and-v1-definition-of-done.md)          | MVP and v1 Definition of Done          | Accepted |
