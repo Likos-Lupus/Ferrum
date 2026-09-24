@@ -133,7 +133,7 @@ class NativeLz4DifferentialTest {
     @Test
     void corruptStreamIsRejectedLikeVanilla() throws IOException {
         var compressed = vanillaEncode(repeated((byte) 'w', 4096));
-        compressed[9 + 12] ^= 0xFF;
+        compressed[9 + 12] = (byte) (compressed[9 + 12] ^ 0xFF);
 
         assertNull(NativeLz4.decode(compressed));
         assertThrows(IOException.class, () -> vanillaDecode(compressed));

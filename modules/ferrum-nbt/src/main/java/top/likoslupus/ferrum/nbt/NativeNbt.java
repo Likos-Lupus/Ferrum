@@ -351,6 +351,7 @@ public final class NativeNbt {
 
     }
 
+    @SuppressWarnings("ArrayRecordComponent")
     private record Raw(
             byte @Nullable [] arenaBytes,
             MemorySegment segment,

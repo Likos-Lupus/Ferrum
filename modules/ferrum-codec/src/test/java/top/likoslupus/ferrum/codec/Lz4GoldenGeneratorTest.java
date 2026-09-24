@@ -116,6 +116,7 @@ class Lz4GoldenGeneratorTest {
         ));
     }
 
+    @SuppressWarnings("ArrayRecordComponent")
     private record GoldenCase(
             String name,
             byte[] raw
