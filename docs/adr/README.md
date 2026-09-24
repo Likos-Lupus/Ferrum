@@ -59,3 +59,4 @@ All files in this directory are written in English.
 | [0011](0011-error-prone-and-nullaway-pins.md)            | Error Prone and NullAway pins                        | Accepted |
 | [0012](0012-nbt-flat-arena-format.md)                    | NBT flat arena format and entry points               | Accepted |
 | [0013](0013-nbt-wire-forms.md)                           | NBT wire forms and the additive `*_any` entry points | Accepted |
+| [0014](0014-codec-lz4-stream.md)                         | Codec LZ4 block-stream implementation and gating     | Accepted |

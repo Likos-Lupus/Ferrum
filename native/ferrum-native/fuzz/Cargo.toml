@@ -18,5 +18,12 @@ test = false
 doc = false
 bench = false
 
+[[bin]]
+name = "lz4_decode"
+path = "fuzz_targets/lz4_decode.rs"
+test = false
+doc = false
+bench = false
+
 [profile.release]
 debug = 1

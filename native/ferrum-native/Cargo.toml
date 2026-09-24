@@ -14,6 +14,13 @@ crate-type = ["cdylib", "rlib"]
 # Test-only entry points (for example an intentional panic) used to exercise error handling.
 test-hooks = []
 
+[dependencies]
+# Raw LZ4 block compression/decompression. Ferrum owns the lz4-java `LZ4Block` framing; the
+# standard LZ4 Frame format is deliberately not used.
+lz4_flex = { version = "0.14.0", default-features = false, features = ["safe-encode", "safe-decode"] }
+# XXH32 is the checksum used by lz4-java's block stream.
+xxhash-rust = { version = "0.8.18", default-features = false, features = ["xxh32"] }
+
 [profile.release]
 lto = true
 codegen-units = 1

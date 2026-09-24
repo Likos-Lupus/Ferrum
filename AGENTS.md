@@ -56,6 +56,7 @@ together with this file. Accepted records are superseded by new ADRs, never edit
 | [0011](docs/adr/0011-error-prone-and-nullaway-pins.md)            | Error Prone and NullAway pins                                                     |
 | [0012](docs/adr/0012-nbt-flat-arena-format.md)                    | NBT flat arena format and entry points                                            |
 | [0013](docs/adr/0013-nbt-wire-forms.md)                           | NBT wire forms and the additive `*_any` entry points                              |
+| [0014](docs/adr/0014-codec-lz4-stream.md)                         | Codec LZ4 block-stream implementation and gating                                  |
 
 ---
 

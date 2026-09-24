@@ -50,6 +50,7 @@ public final class NativeBindings implements AutoCloseable {
     private final MethodHandle selftest;
     private final Map<String, MethodHandle> moduleSymbols;
     private final @Nullable NbtBindings nbt;
+    private final @Nullable CodecBindings codec;
 
     private NativeBindings(
             Arena arena,
@@ -58,7 +59,8 @@ public final class NativeBindings implements AutoCloseable {
             MethodHandle buildInfo,
             MethodHandle selftest,
             Map<String, MethodHandle> moduleSymbols,
-            @Nullable NbtBindings nbt
+            @Nullable NbtBindings nbt,
+            @Nullable CodecBindings codec
     ) {
         this.arena = arena;
         this.abiVersion = abiVersion;
@@ -67,6 +69,7 @@ public final class NativeBindings implements AutoCloseable {
         this.selftest = selftest;
         this.moduleSymbols = moduleSymbols;
         this.nbt = nbt;
+        this.codec = codec;
     }
 
     /**
@@ -127,7 +130,8 @@ public final class NativeBindings implements AutoCloseable {
                     buildInfo,
                     selftest,
                     Map.copyOf(modules),
-                    nbtBindings(modules)
+                    nbtBindings(modules),
+                    codecBindings(modules)
             );
         } catch (RuntimeException | Error throwable) {
             arena.close();
@@ -161,6 +165,14 @@ public final class NativeBindings implements AutoCloseable {
             return null;
         }
         return new NbtBindings(parse, parseAny, write, writeAny);
+    }
+
+    private static @Nullable CodecBindings codecBindings(Map<String, MethodHandle> modules) {
+        var decompress = modules.get("ferrum_lz4_block_stream_decompress");
+        var compress = modules.get("ferrum_lz4_block_stream_compress");
+        return decompress == null || compress == null
+                ? null
+                : new CodecBindings(decompress, compress);
     }
 
     private static Map<String, FunctionDescriptor> moduleDescriptors() {
@@ -403,6 +415,15 @@ public final class NativeBindings implements AutoCloseable {
      */
     public @Nullable NbtBindings nbt() {
         return nbt;
+    }
+
+    /**
+     * Returns the typed codec bindings.
+     *
+     * @return the codec bindings, or {@code null} when the symbols are not present
+     */
+    public @Nullable CodecBindings codec() {
+        return codec;
     }
 
     /**

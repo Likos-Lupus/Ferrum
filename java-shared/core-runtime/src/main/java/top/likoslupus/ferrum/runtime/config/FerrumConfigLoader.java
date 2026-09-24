@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
-import java.util.Optional;
+import java.util.Map;
 
 /**
  * Reads {@code config/ferrum.json} through the Jackson 3 facade.
@@ -66,29 +66,29 @@ public final class FerrumConfigLoader {
                 getBooleanValue(nativeNode, "diagnostics", defaultNative.diagnostics())
         );
 
-        var modules = new LinkedHashMap<String, ModuleSettings>();
+        var modules = new LinkedHashMap<>(defaults.modules());
         var modulesNode = root.get("modules");
         if (modulesNode != null && modulesNode.isObject()) {
             modulesNode.properties()
                     .forEach(entry -> {
-                        var defaultsForModule = defaults.modules().get(entry.getKey());
-                        var defaultMinBatch = Optional.ofNullable(defaultsForModule)
-                                .map(ModuleSettings::minBatch)
-                                .orElse(0);
-                        var enabled = entry.getValue()
-                                .path("enabled")
-                                .asBoolean(true);
-                        var minBatch = entry.getValue()
-                                .path("minBatch")
-                                .asInt(defaultMinBatch);
+                        var name = entry.getKey();
+                        var defaultsForModule = defaults.modules().get(name);
+                        if (defaultsForModule == null) {
+                            LOGGER.warn("Ferrum config module '{}' is unknown; ignored", name);
+                            return;
+                        }
+                        var node = entry.getValue();
+                        var enabled = node.path("enabled").asBoolean(defaultsForModule.enabled());
+                        var minBatch = node.path("minBatch").asInt(defaultsForModule.minBatch());
                         modules.put(
-                                entry.getKey(),
-                                new ModuleSettings(enabled, minBatch)
+                                name,
+                                new ModuleSettings(
+                                        enabled,
+                                        minBatch,
+                                        options(name, node, defaultsForModule)
+                                )
                         );
                     });
-        }
-        if (modules.isEmpty()) {
-            modules.putAll(defaults.modules());
         }
 
         return new FerrumConfig(nativeSettings, modules);
@@ -103,6 +103,31 @@ public final class FerrumConfigLoader {
         return (value == null || value.isNull())
                 ? fallback
                 : value.asBoolean(fallback);
+    }
+
+    private static Map<String, JsonNode> options(
+            String module,
+            JsonNode moduleNode,
+            ModuleSettings defaults
+    ) {
+        var options = new LinkedHashMap<>(defaults.options());
+        var optionsNode = moduleNode.get("options");
+        if (optionsNode != null && optionsNode.isObject()) {
+            optionsNode.properties()
+                    .forEach(entry -> {
+                        var value = entry.getValue();
+                        if (value.isBoolean() || value.isNumber() || value.isString()) {
+                            options.put(entry.getKey(), value);
+                        } else {
+                            LOGGER.warn(
+                                    "Ferrum config option '{}.{}' must be a JSON scalar; ignored",
+                                    module,
+                                    entry.getKey()
+                            );
+                        }
+                    });
+        }
+        return options;
     }
 
 }

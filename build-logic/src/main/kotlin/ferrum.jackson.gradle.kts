@@ -1,7 +1,7 @@
 import top.likoslupus.ferrum.buildlogic.catalogLibrary
 
 plugins {
-    java
+    `java-library`
 }
 
 val forbiddenModules = setOf(
@@ -16,19 +16,19 @@ val forbiddenModules = setOf(
 
 dependencies {
     add(
-        "implementation",
+        "api",
         platform(catalogLibrary("jackson-bom").get())
     )
     add(
-        "implementation",
+        "api",
         catalogLibrary("jackson-databind").get()
     )
     add(
-        "implementation",
+        "api",
         catalogLibrary("jackson-dataformat-yaml").get()
     )
     add(
-        "implementation",
+        "api",
         catalogLibrary("jackson-dataformat-toml").get()
     )
 }

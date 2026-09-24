@@ -36,6 +36,7 @@ jobs:
           :java-shared:testkit:check
           :modules:ferrum-core:chiseledCheck
           :modules:ferrum-nbt:chiseledCheck
+          :modules:ferrum-codec:chiseledCheck
 
   rust:
     name: Rust checks
@@ -79,6 +80,7 @@ jobs:
           ./gradlew --no-daemon
           :java-shared:core-runtime:nativeTest
           :modules:ferrum-nbt:26.1.2-fabric:nativeTest
+          :modules:ferrum-codec:26.1.2-fabric:nativeTest
 
   nbt-golden:
     name: NBT golden corpus is reproducible
@@ -98,8 +100,26 @@ jobs:
       - name: Fail if the committed corpus drifted
         run: git diff --exit-code native/ferrum-native/tests/golden/nbt
 
+  lz4-golden:
+    name: LZ4 golden corpus is reproducible
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: Regenerate the lz4-java block-stream corpus
+        run: ./gradlew --no-daemon :modules:ferrum-codec:26.1.2-fabric:generateLz4Golden
+      - name: Fail if the committed corpus drifted
+        run: git diff --exit-code native/ferrum-native/tests/golden/lz4
+
   fuzz:
-    name: NBT fuzz (nightly)
+    name: Fuzz (nightly)
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -116,6 +136,8 @@ jobs:
         run: cargo install cargo-fuzz --locked
       - name: Fuzz the NBT parser
         run: cargo +nightly fuzz run nbt_parse -- -max_total_time=60 -rss_limit_mb=2048
+      - name: Fuzz the LZ4 block-stream decoder
+        run: cargo +nightly fuzz run lz4_decode -- -max_total_time=60 -rss_limit_mb=2048
 
   abi-drift:
     name: ABI drift check
@@ -145,3 +167,4 @@ jobs:
           ./gradlew --no-daemon
           :modules:ferrum-core:chiseledBuildAndCollect
           :modules:ferrum-nbt:chiseledBuildAndCollect
+          :modules:ferrum-codec:chiseledBuildAndCollect

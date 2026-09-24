@@ -244,6 +244,19 @@ public final class NativeRuntime implements AutoCloseable {
                 : null;
     }
 
+    /**
+     * Returns the typed codec bindings.
+     *
+     * @return the codec bindings, or {@code null} when native is not available or the symbols are
+     * absent
+     */
+    public @Nullable CodecBindings codec() {
+        var current = bindings;
+        return current != null && state.isAvailable()
+                ? current.codec()
+                : null;
+    }
+
     @Override
     public void close() {
         var current = bindings;
