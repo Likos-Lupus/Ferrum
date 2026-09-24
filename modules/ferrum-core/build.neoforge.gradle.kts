@@ -42,6 +42,13 @@ tasks.processResources {
         )
     }
     exclude("fabric.mod.json")
+    val nativeDist = rootProject.layout.projectDirectory.dir("native/dist")
+    if (nativeDist.asFile.exists()) {
+        from(nativeDist) {
+            into("META-INF/ferrum/native/abi-1")
+            exclude("**/*.sha256")
+        }
+    }
 }
 
 tasks.register<Copy>("buildAndCollect") {

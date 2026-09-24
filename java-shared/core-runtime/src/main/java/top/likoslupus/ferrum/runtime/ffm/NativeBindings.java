@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.util.*;
 import org.jspecify.annotations.Nullable;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * The single place where Ferrum native symbols are bound.
  *
@@ -25,6 +27,9 @@ public final class NativeBindings implements AutoCloseable {
             MemoryLayout.sequenceLayout(20L, ValueLayout.JAVA_BYTE).withName("git_commit"),
             MemoryLayout.sequenceLayout(28L, ValueLayout.JAVA_BYTE).withName("reserved")
     );
+
+    /** The expected byte size of the native {@code FerrumBuildInfo} struct. */
+    public static final int BUILD_INFO_SIZE = (int) BUILD_INFO_LAYOUT.byteSize();
 
     private static final Set<String> CORE_SYMBOLS = Set.of(
             "ferrum_abi_version",
@@ -68,7 +73,7 @@ public final class NativeBindings implements AutoCloseable {
      * @throws RuntimeException when the library cannot be loaded or a core symbol is missing
      */
     public static NativeBindings load(Path library) {
-        Objects.requireNonNull(library, "library");
+        requireNonNull(library, "library");
         var arena = Arena.ofShared();
         try {
             var lookup = SymbolLookup.libraryLookup(library, arena);
@@ -321,7 +326,7 @@ public final class NativeBindings implements AutoCloseable {
         if (!outcome.isOk()) {
             throw new IllegalStateException("ferrum_selftest_checksum status=" + outcome.status());
         }
-        return Objects.requireNonNull(outcome.value(), "selftest value");
+        return requireNonNull(outcome.value(), "selftest value");
     }
 
     /**

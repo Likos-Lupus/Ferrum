@@ -1,5 +1,7 @@
 package top.likoslupus.ferrum.runtime.ffm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.likoslupus.ferrum.runtime.NativeRuntimeState;
 
 import java.nio.file.Path;
@@ -15,20 +17,25 @@ import org.jspecify.annotations.Nullable;
  */
 public final class NativeRuntime implements AutoCloseable {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NativeRuntime.class);
+
     private static final long SELFTEST_INPUT = 0x5EED_1234L;
 
     private final @Nullable NativeBindings bindings;
     private final NativeRuntimeState state;
     private final @Nullable String reason;
+    private final @Nullable NativeBuildInfo buildInfo;
 
     private NativeRuntime(
             @Nullable NativeBindings bindings,
             NativeRuntimeState state,
-            @Nullable String reason
+            @Nullable String reason,
+            @Nullable NativeBuildInfo buildInfo
     ) {
         this.bindings = bindings;
         this.state = state;
         this.reason = reason;
+        this.buildInfo = buildInfo;
     }
 
     /**
@@ -39,6 +46,22 @@ public final class NativeRuntime implements AutoCloseable {
      * @return a runtime whose {@link #state()} is {@link NativeRuntimeState#AVAILABLE} on success
      */
     public static NativeRuntime tryLoad(Path library) {
+        return tryLoad(library, true);
+    }
+
+    /**
+     * Attempts to load the native library and run the ABI self-check.
+     *
+     * <p>When {@code strictAbi} is {@code false}, an ABI version mismatch is logged and the
+     * self-check continues; a struct-layout mismatch is always fatal because it would make every
+     * call unsafe.
+     *
+     * @param library   the library file to load
+     * @param strictAbi whether an ABI version mismatch is fatal
+     *
+     * @return a runtime whose {@link #state()} is {@link NativeRuntimeState#AVAILABLE} on success
+     */
+    public static NativeRuntime tryLoad(Path library, boolean strictAbi) {
         NativeBindings loaded;
         try {
             loaded = NativeBindings.load(library);
@@ -52,10 +75,26 @@ public final class NativeRuntime implements AutoCloseable {
         try {
             var version = loaded.abiVersion();
             if (version != NativeBindings.EXPECTED_ABI) {
+                if (strictAbi) {
+                    loaded.close();
+                    return failed(
+                            NativeRuntimeState.ABI_MISMATCH,
+                            "abi=" + version
+                    );
+                }
+                LOGGER.warn(
+                        "native ABI {} != expected {}; continuing because strictAbi=false",
+                        version,
+                        NativeBindings.EXPECTED_ABI
+                );
+            }
+
+            var buildInfo = loaded.buildInfo();
+            if (validateBuildInfo(buildInfo) != NativeStatus.OK) {
                 loaded.close();
                 return failed(
                         NativeRuntimeState.ABI_MISMATCH,
-                        "abi=" + version
+                        "build-info-struct-size=" + buildInfo.structSize()
                 );
             }
 
@@ -71,7 +110,8 @@ public final class NativeRuntime implements AutoCloseable {
             return new NativeRuntime(
                     loaded,
                     NativeRuntimeState.AVAILABLE,
-                    null
+                    null,
+                    buildInfo
             );
         } catch (RuntimeException | LinkageError throwable) {
             loaded.close();
@@ -83,7 +123,23 @@ public final class NativeRuntime implements AutoCloseable {
     }
 
     private static NativeRuntime failed(NativeRuntimeState state, @Nullable String reason) {
-        return new NativeRuntime(null, state, reason);
+        return new NativeRuntime(null, state, reason, null);
+    }
+
+    /**
+     * Validates a decoded build-info struct against the layout this Java runtime understands.
+     *
+     * @param info the decoded build info
+     *
+     * @return {@link NativeStatus#OK} when compatible, otherwise {@link NativeStatus#ABI_MISMATCH}
+     */
+    static NativeStatus validateBuildInfo(NativeBuildInfo info) {
+        if (info.structSize() != NativeBindings.BUILD_INFO_SIZE
+                || info.abiVersion() != NativeBindings.EXPECTED_ABI
+        ) {
+            return NativeStatus.ABI_MISMATCH;
+        }
+        return NativeStatus.OK;
     }
 
     /**
@@ -141,12 +197,16 @@ public final class NativeRuntime implements AutoCloseable {
     }
 
     /**
-     * Reads the native build information.
+     * Returns the native build information.
      *
      * @return the decoded build information
      */
     public NativeBuildInfo buildInfo() {
-        return requireBindings().buildInfo();
+        var current = buildInfo;
+        if (current == null) {
+            throw new IllegalStateException("native runtime not available: " + state);
+        }
+        return current;
     }
 
     /**

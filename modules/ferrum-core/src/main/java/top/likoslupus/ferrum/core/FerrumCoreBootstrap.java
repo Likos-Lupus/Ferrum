@@ -6,13 +6,11 @@ import top.likoslupus.ferrum.runtime.FerrumRuntime;
 import top.likoslupus.ferrum.runtime.config.FerrumConfig;
 import top.likoslupus.ferrum.runtime.config.FerrumConfigLoader;
 import top.likoslupus.ferrum.runtime.ffm.NativeBindings;
-import top.likoslupus.ferrum.runtime.ffm.NativeLibraryLocator;
-import top.likoslupus.ferrum.runtime.nativeimage.NativeResourceInstaller;
+import top.likoslupus.ferrum.runtime.nativeimage.NativeLibraryResolution;
+import top.likoslupus.ferrum.runtime.nativeimage.NativeLibraryResolver;
 
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Loader-agnostic FerrumCore initialization.
@@ -42,21 +40,20 @@ public final class FerrumCoreBootstrap {
 
         var configFile = gameDir.resolve("config").resolve(FerrumConfigLoader.FILE_NAME);
         var config = FerrumConfigLoader.load(configFile);
-        var library = resolveLibrary(gameDir, config);
+        var resolution = resolveLibrary(gameDir, config);
 
-        FerrumRuntime.instance().initialize(config, library);
+        FerrumRuntime.instance().initializeResolved(config, resolution);
         LOGGER.info(status());
     }
 
-    private static @Nullable Path resolveLibrary(Path gameDir, FerrumConfig config) {
-        var installed = NativeResourceInstaller.install(
+    private static NativeLibraryResolution resolveLibrary(Path gameDir, FerrumConfig config) {
+        return NativeLibraryResolver.resolve(
                 FerrumCoreBootstrap.class.getClassLoader(),
                 gameDir.resolve(".ferrum").resolve("native"),
                 NativeBindings.EXPECTED_ABI,
                 FerrumCore.VERSION,
                 config.nativeSettings().verifyChecksums()
         );
-        return Optional.ofNullable(installed).orElseGet(NativeLibraryLocator::find);
     }
 
     /**
@@ -65,7 +62,8 @@ public final class FerrumCoreBootstrap {
      * @return the status report
      */
     public static String status() {
-        return "FerrumCore mixin-applied=" + FerrumCore.isMixinApplied()
+        return "FerrumCore version=" + FerrumCore.VERSION
+                + " mixin-applied=" + FerrumCore.isMixinApplied()
                 + System.lineSeparator()
                 + FerrumRuntime.instance().statusReport();
     }
