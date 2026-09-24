@@ -27,6 +27,14 @@ public final class NativeLibraryLocator {
      * @return the library path, or {@code null} when no build output is present
      */
     public static @Nullable Path find() {
+        var override = System.getProperty("ferrum.native.library");
+        if (override != null && !override.isBlank()) {
+            var path = Path.of(override);
+            return Files.isRegularFile(path)
+                    ? path
+                    : null;
+        }
+
         var directory = Path.of(System.getProperty("user.dir")).toAbsolutePath();
         while (directory != null) {
             var target = directory

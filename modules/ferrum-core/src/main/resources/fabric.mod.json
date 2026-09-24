@@ -6,6 +6,11 @@
   "description": "Ferrum native core runtime.",
   "license": "MIT",
   "environment": "*",
+  "entrypoints": {
+    "main": [
+      "top.likoslupus.ferrum.core.fabric.FerrumCoreFabric"
+    ]
+  },
   "mixins": [
     "ferrum-core.mixins.json"
   ],

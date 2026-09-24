@@ -2,9 +2,9 @@ package top.likoslupus.ferrum.runtime.ffm;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.TestAbortedException;
 
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -82,6 +82,8 @@ class NativeBindingsTest {
             var handle = requireNonNull(bindings.symbol("ferrum_selftest_panic"));
             var status = (int) handle.invokeExact();
             assertEquals(NativeStatus.PANIC, NativeStatus.fromCode(status));
+        } catch (TestAbortedException exception) {
+            throw exception;
         } catch (Throwable throwable) {
             throw new AssertionError("ferrum_selftest_panic invocation failed", throwable);
         }

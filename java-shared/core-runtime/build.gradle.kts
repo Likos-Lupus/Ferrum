@@ -7,9 +7,18 @@ plugins {
 
 dependencies {
     api(project(":java-shared:module-api"))
+
+    testImplementation(libs.slf4j.api)
+    testRuntimeOnly(libs.slf4j.simple)
 }
 
 val nativeCrate = rootProject.layout.projectDirectory.dir("native/ferrum-native")
+
+val nativeLibraryName = when {
+    System.getProperty("os.name").lowercase().contains("win") -> "ferrum.dll"
+    System.getProperty("os.name").lowercase().contains("mac") -> "libferrum.dylib"
+    else -> "libferrum.so"
+}
 
 val buildNative = tasks.register<Exec>("buildNative") {
     group = "build"
@@ -29,4 +38,8 @@ tasks.register<Test>("nativeTest") {
         includeTags("native")
     }
     dependsOn(buildNative)
+    systemProperty(
+        "ferrum.native.library",
+        nativeCrate.dir("target/debug").file(nativeLibraryName).asFile.absolutePath,
+    )
 }

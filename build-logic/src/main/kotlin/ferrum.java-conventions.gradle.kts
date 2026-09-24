@@ -15,7 +15,14 @@ java {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-    options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-restricted", "-Werror", "-parameters"))
+    options.compilerArgs.addAll(
+        listOf(
+            "-Xlint:all",
+            "-Xlint:-restricted",
+            "-Werror",
+            "-parameters"
+        )
+    )
     options.errorprone {
         error("NullAway")
         option("NullAway:OnlyNullMarked", "true")
@@ -36,5 +43,13 @@ dependencies {
     add(
         "errorprone",
         catalogLibrary("nullaway").get()
+    )
+    add(
+        "compileOnly",
+        catalogLibrary("errorprone-annotations").get()
+    )
+    add(
+        "compileOnlyApi",
+        catalogLibrary("slf4j-api").get()
     )
 }

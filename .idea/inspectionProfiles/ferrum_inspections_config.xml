@@ -19,7 +19,7 @@
       <option name="ignoreBooleanMethods" value="false" />
       <option name="ignoreInAnnotationInterface" value="true" />
       <option name="onlyWarnOnBaseMethods" value="true" />
-      <option name="questionString" value="are,can,check,contains,could,endsWith,equals,has,is,matches,must,shall,should,startsWith,was,were,will,would,do,does,did" />
+      <option name="questionString" value="are,can,check,contains,could,endsWith,equals,has,is,matches,must,shall,should,startsWith,was,were,will,would,do,does,did,get" />
     </inspection_tool>
     <inspection_tool class="BoundedWildcard" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="REPORT_PRIVATE_METHODS" value="false" />
@@ -221,7 +221,7 @@
     <inspection_tool class="SimplifiableIfStatement" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
     <inspection_tool class="SimplifyForEach" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
     <inspection_tool class="SimplifyNegatedBinaryExpression" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
-    <inspection_tool class="Singleton" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="Singleton" enabled="true" level="WEAK WARNING" enabled_by_default="true" editorAttributes="INFO_ATTRIBUTES" />
     <inspection_tool class="SortModifiers" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
     <inspection_tool class="StaticCallOnSubclass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticFieldReferenceOnSubclass" enabled="true" level="WARNING" enabled_by_default="true" />

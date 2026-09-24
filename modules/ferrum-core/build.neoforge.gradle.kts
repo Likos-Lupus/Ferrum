@@ -24,6 +24,10 @@ dependencies {
     api(project(":java-shared:core-runtime"))
 }
 
+sourceSets.main {
+    java.srcDir("src/neoforge/java")
+}
+
 java {
     withSourcesJar()
 }

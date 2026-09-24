@@ -338,6 +338,9 @@ dkms.conf
 # Cargo build output
 debug/
 
+# Packaged native artifacts
+native/dist/
+
 # Cargo.lock is committed for reproducible native builds.
 # (Do not ignore it; see ADR-0001 / native build reproducibility.)
 

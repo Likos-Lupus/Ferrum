@@ -5,7 +5,9 @@ plugins {
 val sourceRoots = listOf(
     "src/main/java",
     "src/test/java",
-    "src/testFixtures/java"
+    "src/testFixtures/java",
+    "src/fabric/java",
+    "src/neoforge/java"
 )
 val projectRoot = project.projectDir
 
