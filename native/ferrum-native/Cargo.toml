@@ -10,6 +10,10 @@ description = "Ferrum native kernel with a Minecraft-independent C ABI."
 name = "ferrum"
 crate-type = ["cdylib", "rlib"]
 
+[features]
+# Test-only entry points (for example an intentional panic) used to exercise error handling.
+test-hooks = []
+
 [profile.release]
 lto = true
 codegen-units = 1

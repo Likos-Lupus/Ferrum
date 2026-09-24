@@ -2,39 +2,31 @@ package top.likoslupus.ferrum.runtime.ffm;
 
 import top.likoslupus.ferrum.runtime.NativeRuntimeState;
 
-import java.lang.foreign.*;
-import java.lang.invoke.MethodHandle;
 import java.nio.file.Path;
-import java.util.Objects;
+
 import org.jspecify.annotations.Nullable;
 
 /**
- * Owns a loaded Ferrum native library and the FFM handles needed for the ABI self-check.
+ * Owns a loaded Ferrum native library and its ABI self-check.
  *
  * <p>Use {@link #tryLoad(Path)} to obtain an instance. Loading never throws: any failure is
- * reported through {@link #state()} so callers can fall back to the Java path.
+ * reported through {@link #state()} so callers can fall back to the Java path. Initialization runs
+ * once; every state other than {@link NativeRuntimeState#AVAILABLE} is an explainable fallback.
  */
 public final class NativeRuntime implements AutoCloseable {
 
-    private static final int EXPECTED_ABI = 1;
     private static final long SELFTEST_INPUT = 0x5EED_1234L;
 
-    private final @Nullable Arena arena;
-    private final @Nullable MethodHandle abiVersion;
-    private final @Nullable MethodHandle selftest;
+    private final @Nullable NativeBindings bindings;
     private final NativeRuntimeState state;
     private final @Nullable String reason;
 
     private NativeRuntime(
-            @Nullable Arena arena,
-            @Nullable MethodHandle abiVersion,
-            @Nullable MethodHandle selftest,
+            @Nullable NativeBindings bindings,
             NativeRuntimeState state,
             @Nullable String reason
     ) {
-        this.arena = arena;
-        this.abiVersion = abiVersion;
-        this.selftest = selftest;
+        this.bindings = bindings;
         this.state = state;
         this.reason = reason;
     }
@@ -47,56 +39,42 @@ public final class NativeRuntime implements AutoCloseable {
      * @return a runtime whose {@link #state()} is {@link NativeRuntimeState#AVAILABLE} on success
      */
     public static NativeRuntime tryLoad(Path library) {
-        var arena = Arena.ofShared();
+        NativeBindings loaded;
         try {
-            var lookup = SymbolLookup.libraryLookup(library, arena);
-            var linker = Linker.nativeLinker();
-            var abi = linker.downcallHandle(
-                    lookup.find("ferrum_abi_version").orElseThrow(),
-                    FunctionDescriptor.of(ValueLayout.JAVA_INT)
+            loaded = NativeBindings.load(library);
+        } catch (RuntimeException | LinkageError throwable) {
+            return failed(
+                    NativeRuntimeState.LOAD_FAILED,
+                    throwable.getClass().getSimpleName()
             );
-            var selftest = linker.downcallHandle(
-                    lookup.find("ferrum_selftest_checksum").orElseThrow(),
-                    FunctionDescriptor.of(
-                            ValueLayout.JAVA_INT,
-                            ValueLayout.JAVA_LONG,
-                            ValueLayout.ADDRESS
-                    )
-            );
-            var version = (int) abi.invokeExact();
-            if (version != EXPECTED_ABI) {
-                arena.close();
+        }
+
+        try {
+            var version = loaded.abiVersion();
+            if (version != NativeBindings.EXPECTED_ABI) {
+                loaded.close();
                 return failed(
                         NativeRuntimeState.ABI_MISMATCH,
                         "abi=" + version
                 );
             }
 
-            var output = arena.allocate(ValueLayout.JAVA_LONG);
-            var status = (int) selftest.invokeExact(SELFTEST_INPUT, output);
-            if (status != 0) {
-                arena.close();
+            var outcome = loaded.invokeSelftest(SELFTEST_INPUT);
+            if (!outcome.isOk()) {
+                loaded.close();
                 return failed(
                         NativeRuntimeState.SELFTEST_FAILED,
-                        "status=" + status
+                        "status=" + outcome.status()
                 );
             }
 
             return new NativeRuntime(
-                    arena,
-                    abi,
-                    selftest,
+                    loaded,
                     NativeRuntimeState.AVAILABLE,
                     null
             );
         } catch (RuntimeException | LinkageError throwable) {
-            arena.close();
-            return failed(
-                    NativeRuntimeState.LOAD_FAILED,
-                    throwable.getClass().getSimpleName()
-            );
-        } catch (Throwable throwable) {
-            arena.close();
+            loaded.close();
             return failed(
                     NativeRuntimeState.SELFTEST_FAILED,
                     throwable.getClass().getSimpleName()
@@ -104,66 +82,100 @@ public final class NativeRuntime implements AutoCloseable {
         }
     }
 
-    private static NativeRuntime failed(
-            NativeRuntimeState state,
-            @Nullable String reason
-    ) {
-        return new NativeRuntime(
-                null,
-                null,
-                null,
-                state,
-                reason
-        );
+    private static NativeRuntime failed(NativeRuntimeState state, @Nullable String reason) {
+        return new NativeRuntime(null, state, reason);
     }
 
+    /**
+     * Returns the current lifecycle state.
+     *
+     * @return the runtime state
+     */
     public NativeRuntimeState state() {
         return state;
     }
 
+    /**
+     * Returns whether the native runtime is usable.
+     *
+     * @return {@code true} when native calls are available
+     */
     public boolean isAvailable() {
         return state.isAvailable();
     }
 
+    /**
+     * Returns the fallback reason, when not available.
+     *
+     * @return a human-readable reason, or {@code null}
+     */
     public @Nullable String reason() {
         return reason;
     }
 
+    /**
+     * Returns the ABI version reported by the library.
+     *
+     * @return the ABI version
+     */
     public int abiVersion() {
-        var handle = require(abiVersion);
-        try {
-            return (int) handle.invokeExact();
-        } catch (Throwable throwable) {
-            throw new IllegalStateException("ferrum_abi_version failed", throwable);
-        }
+        return requireBindings().abiVersion();
     }
 
-    private MethodHandle require(@Nullable MethodHandle handle) {
-        if (handle == null || !state.isAvailable()) {
+    private NativeBindings requireBindings() {
+        var current = bindings;
+        if (current == null || !state.isAvailable()) {
             throw new IllegalStateException("native runtime not available: " + state);
         }
-        return handle;
+
+        return current;
     }
 
+    /**
+     * Returns the feature bits reported by the library.
+     *
+     * @return the advertised feature bits
+     */
+    public long featureBits() {
+        return requireBindings().featureBits();
+    }
+
+    /**
+     * Reads the native build information.
+     *
+     * @return the decoded build information
+     */
+    public NativeBuildInfo buildInfo() {
+        return requireBindings().buildInfo();
+    }
+
+    /**
+     * Runs the deterministic selftest checksum.
+     *
+     * @param input the selftest input
+     *
+     * @return the checksum value
+     */
     public long selftest(long input) {
-        var handle = require(selftest);
-        var memory = Objects.requireNonNull(arena, "arena");
-        var output = memory.allocate(ValueLayout.JAVA_LONG);
-        try {
-            var status = (int) handle.invokeExact(input, output);
-            if (status != 0) {
-                throw new IllegalStateException("ferrum_selftest_checksum status=" + status);
-            }
-            return output.get(ValueLayout.JAVA_LONG, 0L);
-        } catch (Throwable throwable) {
-            throw new IllegalStateException("ferrum_selftest_checksum failed", throwable);
-        }
+        return requireBindings().selftest(input);
+    }
+
+    /**
+     * Runs the deterministic selftest checksum, surfacing its status.
+     *
+     * @param input the selftest input
+     *
+     * @return the outcome, carrying the checksum on success
+     */
+    public NativeOutcome<Long> invokeSelftest(long input) {
+        return requireBindings().invokeSelftest(input);
     }
 
     @Override
     public void close() {
-        if (arena != null) {
-            arena.close();
+        var current = bindings;
+        if (current != null) {
+            current.close();
         }
     }
 

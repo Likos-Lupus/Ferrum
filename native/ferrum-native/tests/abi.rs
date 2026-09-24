@@ -34,3 +34,9 @@ fn selftest_is_deterministic() {
     assert_eq!(unsafe { ferrum_selftest_checksum(42, &mut second) }, 0);
     assert_eq!(first, second);
 }
+
+#[cfg(feature = "test-hooks")]
+#[test]
+fn panic_is_converted_to_panic_status() {
+    assert_eq!(ferrum::testhooks::ferrum_selftest_panic(), -127);
+}

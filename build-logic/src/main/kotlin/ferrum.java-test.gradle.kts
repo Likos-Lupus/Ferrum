@@ -1,4 +1,3 @@
-import org.gradle.api.tasks.testing.Test
 import top.likoslupus.ferrum.buildlogic.catalogLibrary
 
 plugins {
@@ -27,4 +26,10 @@ dependencies {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     jvmArgs("--enable-native-access=ALL-UNNAMED")
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform {
+        excludeTags("native")
+    }
 }

@@ -53,6 +53,55 @@ uint64_t ferrum_feature_bits(void);
 int32_t ferrum_build_info(struct FerrumBuildInfo* out, size_t out_size);
 int32_t ferrum_selftest_checksum(uint64_t input, uint64_t* output);
 
+/*
+ * Module entry points.
+ *
+ * These symbols are declared for ABI stability. Until the corresponding module is implemented and
+ * its feature bit is advertised by ferrum_feature_bits(), every call returns FERRUM_ERR_UNSUPPORTED.
+ */
+
+int32_t ferrum_nbt_parse(
+    const uint8_t* src, size_t src_len,
+    const struct FerrumLimits* limits,
+    uint8_t* arena, size_t arena_cap,
+    uint32_t* root_index,
+    size_t* used_or_required);
+
+int32_t ferrum_nbt_write(
+    const uint8_t* arena, size_t arena_len,
+    uint32_t root_index,
+    uint8_t* dst, size_t dst_cap,
+    size_t* written_or_required);
+
+int32_t ferrum_lz4_block_stream_decompress(
+    const uint8_t* src, size_t src_len,
+    uint8_t* dst, size_t dst_cap,
+    size_t* written_or_required);
+
+int32_t ferrum_lz4_block_stream_compress(
+    const uint8_t* src, size_t src_len,
+    uint8_t* dst, size_t dst_cap,
+    int32_t compression_level,
+    size_t* written_or_required);
+
+int32_t ferrum_palette_unpack(
+    const uint64_t* data, size_t data_len,
+    uint32_t bits, size_t value_count,
+    uint32_t* out_values, size_t out_len);
+
+int32_t ferrum_palette_pack(
+    const uint32_t* values, size_t value_count,
+    uint32_t bits,
+    uint64_t* out_data, size_t out_len);
+
+int32_t ferrum_noise_batch(
+    uint64_t noise_handle,
+    const double* xs, const double* ys, const double* zs,
+    double* out_values, size_t sample_count,
+    uint32_t flags);
+
+int32_t ferrum_noise_destroy(uint64_t noise_handle);
+
 #ifdef __cplusplus
 }
 #endif

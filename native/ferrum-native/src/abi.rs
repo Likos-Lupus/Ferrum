@@ -18,6 +18,15 @@ pub const FERRUM_FEATURE_LIGHT: u64 = 1 << 4;
 pub const FERRUM_FEATURE_COLLIDE: u64 = 1 << 5;
 pub const FERRUM_FEATURE_PATH: u64 = 1 << 6;
 
+/// An opaque native handle.
+///
+/// Handles are produced by `create` style APIs, used across many calls, and released exactly once
+/// by the matching `destroy` API. The value `0` is reserved to mean "no handle".
+pub type FerrumHandle = u64;
+
+/// The reserved null/invalid handle value.
+pub const FERRUM_HANDLE_NULL: FerrumHandle = 0;
+
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct FerrumBuildInfo {
