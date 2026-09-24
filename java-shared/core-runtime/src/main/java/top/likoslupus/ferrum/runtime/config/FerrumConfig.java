@@ -35,7 +35,7 @@ public record FerrumConfig(
                         false
                 ),
                 Map.of(
-                        "nbt", new ModuleSettings(true),
+                        "nbt", new ModuleSettings(true, 4096),
                         "codec", new ModuleSettings(true),
                         "palette", new ModuleSettings(true),
                         "noise", new ModuleSettings(true),

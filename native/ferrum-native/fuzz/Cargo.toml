@@ -1,0 +1,22 @@
+[package]
+name = "ferrum-native-fuzz"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+ferrum-native = { path = ".." }
+
+[[bin]]
+name = "nbt_parse"
+path = "fuzz_targets/nbt_parse.rs"
+test = false
+doc = false
+bench = false
+
+[profile.release]
+debug = 1

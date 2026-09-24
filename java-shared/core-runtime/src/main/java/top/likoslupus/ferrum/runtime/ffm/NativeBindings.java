@@ -3,7 +3,10 @@ package top.likoslupus.ferrum.runtime.ffm;
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import org.jspecify.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
@@ -46,6 +49,7 @@ public final class NativeBindings implements AutoCloseable {
     private final MethodHandle buildInfo;
     private final MethodHandle selftest;
     private final Map<String, MethodHandle> moduleSymbols;
+    private final @Nullable NbtBindings nbt;
 
     private NativeBindings(
             Arena arena,
@@ -53,7 +57,8 @@ public final class NativeBindings implements AutoCloseable {
             MethodHandle featureBits,
             MethodHandle buildInfo,
             MethodHandle selftest,
-            Map<String, MethodHandle> moduleSymbols
+            Map<String, MethodHandle> moduleSymbols,
+            @Nullable NbtBindings nbt
     ) {
         this.arena = arena;
         this.abiVersion = abiVersion;
@@ -61,6 +66,7 @@ public final class NativeBindings implements AutoCloseable {
         this.buildInfo = buildInfo;
         this.selftest = selftest;
         this.moduleSymbols = moduleSymbols;
+        this.nbt = nbt;
     }
 
     /**
@@ -120,7 +126,8 @@ public final class NativeBindings implements AutoCloseable {
                     featureBits,
                     buildInfo,
                     selftest,
-                    Map.copyOf(modules)
+                    Map.copyOf(modules),
+                    nbtBindings(modules)
             );
         } catch (RuntimeException | Error throwable) {
             arena.close();
@@ -139,6 +146,21 @@ public final class NativeBindings implements AutoCloseable {
                         new IllegalStateException("missing native symbol: " + name)
                 );
         return linker.downcallHandle(symbol, descriptor);
+    }
+
+    private static @Nullable NbtBindings nbtBindings(Map<String, MethodHandle> modules) {
+        var parse = modules.get("ferrum_nbt_parse");
+        var parseAny = modules.get("ferrum_nbt_parse_any");
+        var write = modules.get("ferrum_nbt_write");
+        var writeAny = modules.get("ferrum_nbt_write_any");
+        if (parse == null
+                || parseAny == null
+                || write == null
+                || writeAny == null
+        ) {
+            return null;
+        }
+        return new NbtBindings(parse, parseAny, write, writeAny);
     }
 
     private static Map<String, FunctionDescriptor> moduleDescriptors() {
@@ -163,6 +185,32 @@ public final class NativeBindings implements AutoCloseable {
         );
         descriptors.put(
                 "ferrum_nbt_write",
+                FunctionDescriptor.of(
+                        status,
+                        address,
+                        longs,
+                        ints,
+                        address,
+                        longs,
+                        address
+                )
+        );
+        descriptors.put(
+                "ferrum_nbt_parse_any",
+                FunctionDescriptor.of(
+                        status,
+                        address,
+                        longs,
+                        address,
+                        address,
+                        longs,
+                        address,
+                        address,
+                        address
+                )
+        );
+        descriptors.put(
+                "ferrum_nbt_write_any",
                 FunctionDescriptor.of(
                         status,
                         address,
@@ -346,6 +394,15 @@ public final class NativeBindings implements AutoCloseable {
         } catch (Throwable throwable) {
             return NativeOutcome.failure(NativeStatus.INTERNAL);
         }
+    }
+
+    /**
+     * Returns the typed NBT bindings.
+     *
+     * @return the NBT bindings, or {@code null} when the symbols are not present
+     */
+    public @Nullable NbtBindings nbt() {
+        return nbt;
     }
 
     /**

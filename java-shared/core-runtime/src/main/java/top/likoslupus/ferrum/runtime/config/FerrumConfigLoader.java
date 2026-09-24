@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 
 /**
  * Reads {@code config/ferrum.json} through the Jackson 3 facade.
@@ -70,12 +71,19 @@ public final class FerrumConfigLoader {
         if (modulesNode != null && modulesNode.isObject()) {
             modulesNode.properties()
                     .forEach(entry -> {
+                        var defaultsForModule = defaults.modules().get(entry.getKey());
+                        var defaultMinBatch = Optional.ofNullable(defaultsForModule)
+                                .map(ModuleSettings::minBatch)
+                                .orElse(0);
                         var enabled = entry.getValue()
                                 .path("enabled")
                                 .asBoolean(true);
+                        var minBatch = entry.getValue()
+                                .path("minBatch")
+                                .asInt(defaultMinBatch);
                         modules.put(
                                 entry.getKey(),
-                                new ModuleSettings(enabled)
+                                new ModuleSettings(enabled, minBatch)
                         );
                     });
         }

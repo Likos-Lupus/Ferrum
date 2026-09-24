@@ -41,19 +41,21 @@ Frozen implementation rules are kept as self-contained, English ADRs under
 [`docs/adr/`](docs/adr/README.md). They are the git-tracked execution reference; consult them
 together with this file. Accepted records are superseded by new ADRs, never edited in place.
 
-| ADR                                                             | Title                                                                             |
-|-----------------------------------------------------------------|-----------------------------------------------------------------------------------|
-| [0001](docs/adr/0001-frozen-implementation-decisions.md)        | Frozen implementation decisions (platform, architecture invariants, Java quality) |
-| [0002](docs/adr/0002-nbt-modified-utf8.md)                      | NBT strings use Modified UTF-8                                                    |
-| [0003](docs/adr/0003-lz4-block-stream-framing.md)               | Codec LZ4 uses block-stream framing                                               |
-| [0004](docs/adr/0004-arena-and-scratch-lifecycle.md)            | Arena and scratch-buffer lifecycle                                                |
-| [0005](docs/adr/0005-native-platform-matrix.md)                 | Native platform support matrix                                                    |
-| [0006](docs/adr/0006-noise-and-float-bit-exactness.md)          | Noise and float bit-exactness policy                                              |
-| [0007](docs/adr/0007-performance-multipliers-are-hypotheses.md) | Performance multipliers are hypotheses                                            |
-| [0008](docs/adr/0008-mvp-and-v1-definition-of-done.md)         | MVP and v1 Definition of Done                                                     |
-| [0009](docs/adr/0009-stonecutter-version-axis.md)               | Stonecutter version axis                                                          |
+| ADR                                                               | Title                                                                             |
+|-------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| [0001](docs/adr/0001-frozen-implementation-decisions.md)          | Frozen implementation decisions (platform, architecture invariants, Java quality) |
+| [0002](docs/adr/0002-nbt-modified-utf8.md)                        | NBT strings use Modified UTF-8                                                    |
+| [0003](docs/adr/0003-lz4-block-stream-framing.md)                 | Codec LZ4 uses block-stream framing                                               |
+| [0004](docs/adr/0004-arena-and-scratch-lifecycle.md)              | Arena and scratch-buffer lifecycle                                                |
+| [0005](docs/adr/0005-native-platform-matrix.md)                   | Native platform support matrix                                                    |
+| [0006](docs/adr/0006-noise-and-float-bit-exactness.md)            | Noise and float bit-exactness policy                                              |
+| [0007](docs/adr/0007-performance-multipliers-are-hypotheses.md)   | Performance multipliers are hypotheses                                            |
+| [0008](docs/adr/0008-mvp-and-v1-definition-of-done.md)            | MVP and v1 Definition of Done                                                     |
+| [0009](docs/adr/0009-stonecutter-version-axis.md)                 | Stonecutter version axis                                                          |
 | [0010](docs/adr/0010-stonecutter-controller-and-26x-toolchain.md) | Stonecutter module controller and the 26.x toolchain                              |
-| [0011](docs/adr/0011-error-prone-and-nullaway-pins.md)          | Error Prone and NullAway pins                                                     |
+| [0011](docs/adr/0011-error-prone-and-nullaway-pins.md)            | Error Prone and NullAway pins                                                     |
+| [0012](docs/adr/0012-nbt-flat-arena-format.md)                    | NBT flat arena format and entry points                                            |
+| [0013](docs/adr/0013-nbt-wire-forms.md)                           | NBT wire forms and the additive `*_any` entry points                              |
 
 ---
 
@@ -165,8 +167,8 @@ These rules apply to every agent working in this repository.
 - Java 25, no preview features in release builds; prefer records/sealed types/pattern matching, but
   keep hot paths on predictable primitives and explicit loops. No raw types, wildcard imports, or
   `@SuppressWarnings("all")`.
-- The Minecraft version axis (1.21.1 / 26.1.2) is managed by **Stonecutter** over a single source tree
-  per module; the loader build/remap/run environment is **Architectury Loom**. Canonical active
+- The Minecraft version axis (1.21.1 / 26.1.2) is managed by **Stonecutter** over a single source
+  tree per module; the loader build/remap/run environment is **Architectury Loom**. Canonical active
   target is `26.1.2-fabric`; all four targets are checked in aggregate. Stonecutter conditions must
   not reach `java-shared`, the FFM ABI, the Rust kernel, or pure algorithm code.
 - Fabric + NeoForge share the `common` design via **Architectury Loom**; Architectury API only at

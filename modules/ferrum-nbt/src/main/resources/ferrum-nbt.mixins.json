@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "top.likoslupus.ferrum.nbt.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "FriendlyByteBufMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

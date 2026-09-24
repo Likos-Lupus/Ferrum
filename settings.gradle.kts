@@ -18,7 +18,7 @@ plugins {
 
 gradle.beforeProject {
     val loader = path.substringAfterLast('-')
-    if (path.startsWith(":modules:ferrum-core:") && (loader == "fabric" || loader == "neoforge")) {
+    if (path.startsWith(":modules:") && (loader == "fabric" || loader == "neoforge")) {
         extensions.extraProperties.set("loom.platform", loader)
     }
 }
@@ -38,9 +38,26 @@ include(":java-shared:module-api")
 include(":java-shared:core-runtime")
 include(":java-shared:testkit")
 include(":modules:ferrum-core")
+include(":modules:ferrum-nbt")
 
 stonecutter {
     create(":modules:ferrum-core") {
+        fun target(
+            projectName: String,
+            vararg loaders: String,
+            version: String = projectName
+        ) {
+            loaders.forEach {
+                version("$projectName-$it", version).buildscript("build.$it.gradle.kts")
+            }
+        }
+
+        target("1.21.1", "fabric", "neoforge")
+        target("26.1.2", "fabric", "neoforge")
+        vcsVersion = "26.1.2-fabric"
+    }
+
+    create(":modules:ferrum-nbt") {
         fun target(
             projectName: String,
             vararg loaders: String,

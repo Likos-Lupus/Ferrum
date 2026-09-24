@@ -73,6 +73,20 @@ int32_t ferrum_nbt_write(
     uint8_t* dst, size_t dst_cap,
     size_t* written_or_required);
 
+int32_t ferrum_nbt_parse_any(
+    const uint8_t* src, size_t src_len,
+    const struct FerrumLimits* limits,
+    uint8_t* arena, size_t arena_cap,
+    uint32_t* root_index,
+    size_t* used_or_required,
+    size_t* consumed);
+
+int32_t ferrum_nbt_write_any(
+    const uint8_t* arena, size_t arena_len,
+    uint32_t root_index,
+    uint8_t* dst, size_t dst_cap,
+    size_t* written_or_required);
+
 int32_t ferrum_lz4_block_stream_decompress(
     const uint8_t* src, size_t src_len,
     uint8_t* dst, size_t dst_cap,

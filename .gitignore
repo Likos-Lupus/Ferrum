@@ -165,6 +165,11 @@ tags
 
 # Logs
 *.log
+*.log.gz
+
+# Stonecutter node output (generated; never hand-edited)
+modules/*/versions/*/build/
+modules/*/versions/*/logs/
 
 # Temporary / backup files
 *.tmp

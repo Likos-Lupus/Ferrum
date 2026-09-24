@@ -231,6 +231,19 @@ public final class NativeRuntime implements AutoCloseable {
         return requireBindings().invokeSelftest(input);
     }
 
+    /**
+     * Returns the typed NBT bindings.
+     *
+     * @return the NBT bindings, or {@code null} when native is not available or the symbols are
+     * absent
+     */
+    public @Nullable NbtBindings nbt() {
+        var current = bindings;
+        return current != null && state.isAvailable()
+                ? current.nbt()
+                : null;
+    }
+
     @Override
     public void close() {
         var current = bindings;
