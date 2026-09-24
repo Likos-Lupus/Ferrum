@@ -26,6 +26,8 @@ jobs:
           distribution: temurin
           java-version: "25"
       - uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
       - name: Gradle check (compile, -Werror, Error Prone/NullAway, JUnit 6, guards)
         run: >-
           ./gradlew --no-daemon
@@ -69,6 +71,8 @@ jobs:
         with:
           workspaces: native/ferrum-native
       - uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
       - name: Real FFM binding tests against libferrum
         run: ./gradlew --no-daemon :java-shared:core-runtime:nativeTest
 
@@ -93,5 +97,7 @@ jobs:
           distribution: temurin
           java-version: "25"
       - uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
       - name: Remap and collect every target
         run: ./gradlew --no-daemon :modules:ferrum-core:chiseledBuildAndCollect
