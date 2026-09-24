@@ -257,6 +257,19 @@ public final class NativeRuntime implements AutoCloseable {
                 : null;
     }
 
+    /**
+     * Returns the typed palette bindings.
+     *
+     * @return the palette bindings, or {@code null} when native is not available or the symbols are
+     * absent
+     */
+    public @Nullable PaletteBindings palette() {
+        var current = bindings;
+        return current != null && state.isAvailable()
+                ? current.palette()
+                : null;
+    }
+
     @Override
     public void close() {
         var current = bindings;

@@ -44,19 +44,21 @@ All files in this directory are written in English.
 
 ## Index
 
-| ADR                                                      | Title                                                | Status   |
-|----------------------------------------------------------|------------------------------------------------------|----------|
-| [0001](0001-frozen-implementation-decisions.md)          | Frozen implementation decisions                      | Accepted |
-| [0002](0002-nbt-modified-utf8.md)                        | NBT strings use Modified UTF-8                       | Accepted |
-| [0003](0003-lz4-block-stream-framing.md)                 | Codec LZ4 uses block-stream framing                  | Accepted |
-| [0004](0004-arena-and-scratch-lifecycle.md)              | Arena and scratch-buffer lifecycle                   | Accepted |
-| [0005](0005-native-platform-matrix.md)                   | Native platform support matrix                       | Accepted |
-| [0006](0006-noise-and-float-bit-exactness.md)            | Noise and float bit-exactness policy                 | Accepted |
-| [0007](0007-performance-multipliers-are-hypotheses.md)   | Performance multipliers are hypotheses               | Accepted |
-| [0008](0008-mvp-and-v1-definition-of-done.md)            | MVP and v1 Definition of Done                        | Accepted |
-| [0009](0009-stonecutter-version-axis.md)                 | Stonecutter version axis                             | Accepted |
-| [0010](0010-stonecutter-controller-and-26x-toolchain.md) | Stonecutter module controller and the 26.x toolchain | Accepted |
-| [0011](0011-error-prone-and-nullaway-pins.md)            | Error Prone and NullAway pins                        | Accepted |
-| [0012](0012-nbt-flat-arena-format.md)                    | NBT flat arena format and entry points               | Accepted |
-| [0013](0013-nbt-wire-forms.md)                           | NBT wire forms and the additive `*_any` entry points | Accepted |
-| [0014](0014-codec-lz4-stream.md)                         | Codec LZ4 block-stream implementation and gating     | Accepted |
+| ADR                                                      | Title                                                       | Status   |
+|----------------------------------------------------------|-------------------------------------------------------------|----------|
+| [0001](0001-frozen-implementation-decisions.md)          | Frozen implementation decisions                             | Accepted |
+| [0002](0002-nbt-modified-utf8.md)                        | NBT strings use Modified UTF-8                              | Accepted |
+| [0003](0003-lz4-block-stream-framing.md)                 | Codec LZ4 uses block-stream framing                         | Accepted |
+| [0004](0004-arena-and-scratch-lifecycle.md)              | Arena and scratch-buffer lifecycle                          | Accepted |
+| [0005](0005-native-platform-matrix.md)                   | Native platform support matrix                              | Accepted |
+| [0006](0006-noise-and-float-bit-exactness.md)            | Noise and float bit-exactness policy                        | Accepted |
+| [0007](0007-performance-multipliers-are-hypotheses.md)   | Performance multipliers are hypotheses                      | Accepted |
+| [0008](0008-mvp-and-v1-definition-of-done.md)            | MVP and v1 Definition of Done                               | Accepted |
+| [0009](0009-stonecutter-version-axis.md)                 | Stonecutter version axis                                    | Accepted |
+| [0010](0010-stonecutter-controller-and-26x-toolchain.md) | Stonecutter module controller and the 26.x toolchain        | Accepted |
+| [0011](0011-error-prone-and-nullaway-pins.md)            | Error Prone and NullAway pins                               | Accepted |
+| [0012](0012-nbt-flat-arena-format.md)                    | NBT flat arena format and entry points                      | Accepted |
+| [0013](0013-nbt-wire-forms.md)                           | NBT wire forms and the additive `*_any` entry points        | Accepted |
+| [0014](0014-codec-lz4-stream.md)                         | Codec LZ4 block-stream implementation and gating            | Accepted |
+| [0015](0015-palette-bit-storage-layout.md)               | Palette bulk pack/unpack uses the `SimpleBitStorage` layout | Accepted |
+| [0016](0016-production-fused-palette-remap.md)           | Production fused palette remap                              | Proposed |

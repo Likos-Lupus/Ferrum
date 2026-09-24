@@ -37,6 +37,7 @@ jobs:
           :modules:ferrum-core:chiseledCheck
           :modules:ferrum-nbt:chiseledCheck
           :modules:ferrum-codec:chiseledCheck
+          :modules:ferrum-palette:chiseledCheck
 
   rust:
     name: Rust checks
@@ -81,6 +82,7 @@ jobs:
           :java-shared:core-runtime:nativeTest
           :modules:ferrum-nbt:26.1.2-fabric:nativeTest
           :modules:ferrum-codec:26.1.2-fabric:nativeTest
+          :modules:ferrum-palette:26.1.2-fabric:nativeTest
 
   nbt-golden:
     name: NBT golden corpus is reproducible
@@ -118,6 +120,27 @@ jobs:
       - name: Fail if the committed corpus drifted
         run: git diff --exit-code native/ferrum-native/tests/golden/lz4
 
+  palette-golden:
+    name: Palette golden corpora are reproducible
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: Regenerate the SimpleBitStorage and remap corpora
+        run: ./gradlew --no-daemon :modules:ferrum-palette:26.1.2-fabric:generatePaletteGolden
+      - name: Fail if the committed corpora drifted
+        run: >-
+          git diff --exit-code
+          native/ferrum-native/tests/golden/palette
+          native/ferrum-native/tests/golden/palette-remap
+
   fuzz:
     name: Fuzz (nightly)
     if: github.event_name == 'schedule'
@@ -138,6 +161,10 @@ jobs:
         run: cargo +nightly fuzz run nbt_parse -- -max_total_time=60 -rss_limit_mb=2048
       - name: Fuzz the LZ4 block-stream decoder
         run: cargo +nightly fuzz run lz4_decode -- -max_total_time=60 -rss_limit_mb=2048
+      - name: Fuzz the palette unpack
+        run: cargo +nightly fuzz run palette_unpack -- -max_total_time=60 -rss_limit_mb=2048
+      - name: Fuzz the palette pack
+        run: cargo +nightly fuzz run palette_pack -- -max_total_time=60 -rss_limit_mb=2048
 
   abi-drift:
     name: ABI drift check
@@ -147,6 +174,8 @@ jobs:
       - uses: actions/checkout@v7
       - name: Verify ABI version and symbol surface
         run: bash scripts/check-abi.sh
+      - name: Verify the test-hooks symbol surface
+        run: bash scripts/check-abi.sh --test-hooks
 
   remap:
     name: 4-target remap (push/schedule)
@@ -168,3 +197,4 @@ jobs:
           :modules:ferrum-core:chiseledBuildAndCollect
           :modules:ferrum-nbt:chiseledBuildAndCollect
           :modules:ferrum-codec:chiseledBuildAndCollect
+          :modules:ferrum-palette:chiseledBuildAndCollect

@@ -1,0 +1,12 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
+description = "Ferrum palette bulk pack/unpack native fast path."
+
+[[mixins]]
+config = "ferrum-palette.mixins.json"

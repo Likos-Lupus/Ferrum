@@ -6,9 +6,22 @@
 #   2. native/ferrum-native/include/ferrum_abi.h (human-reviewable C header)
 #   3. java-shared/core-runtime/.../ffm/NativeBindings.java (Java FunctionDescriptors)
 #
-# The test-only `ferrum_selftest_panic` hook (cargo feature `test-hooks`) is intentionally absent
-# from the header and is handled as an allowed Java-only extra.
+# Test/benchmark-only hooks (cargo feature `test-hooks`) are intentionally absent from the header
+# and are never part of the stable surface. The legacy `ferrum_selftest_panic` hook keeps its FFM
+# descriptor in NativeBindings; temporary hooks use the `ferrum_test_` prefix and are bound only by
+# test harnesses. Pass `--test-hooks` when checking a build compiled with the feature.
 set -euo pipefail
+
+check_test_hooks=false
+for argument in "$@"; do
+    case "$argument" in
+        --test-hooks) check_test_hooks=true ;;
+        *)
+            echo "usage: $0 [--test-hooks]" >&2
+            exit 2
+            ;;
+    esac
+done
 
 repo_root="$(cd "$(dirname "$0")/.." && pwd)"
 
@@ -18,6 +31,7 @@ header="$repo_root/native/ferrum-native/include/ferrum_abi.h"
 bindings="$repo_root/java-shared/core-runtime/src/main/java/top/likoslupus/ferrum/runtime/ffm/NativeBindings.java"
 
 test_hook_symbol="ferrum_selftest_panic"
+test_hook_prefix="ferrum_test_"
 
 fail() {
     echo "ABI drift check failed: $*" >&2
@@ -54,7 +68,19 @@ rust_symbols="$(
     grep -rhoE 'fn[[:space:]]+ferrum_[a-z0-9_]+[[:space:]]*\(' "$rust_src" \
         | grep -oE 'ferrum_[a-z0-9_]+' | sort -u || true
 )"
-rust_default_symbols="$(printf '%s\n' "$rust_symbols" | grep -vx "$test_hook_symbol" | sort -u || true)"
+rust_test_hooks="$(
+    printf '%s\n' "$rust_symbols" \
+        | grep -E "^(${test_hook_symbol}|${test_hook_prefix}[a-z0-9_]+)$" | sort -u || true
+)"
+rust_default_symbols="$(
+    printf '%s\n' "$rust_symbols" \
+        | grep -vE "^(${test_hook_symbol}|${test_hook_prefix}[a-z0-9_]+)$" | sort -u || true
+)"
+
+if printf '%s\n' "$header_symbols" \
+        | grep -qE "^(${test_hook_symbol}|${test_hook_prefix}[a-z0-9_]+)$"; then
+    fail "the public header must not declare test hooks"
+fi
 
 java_symbols="$(
     grep -oE '"ferrum_[a-z0-9_]+"' "$bindings" | tr -d '"' | sort -u || true
@@ -82,3 +108,8 @@ fi
 
 symbol_count="$(printf '%s\n' "$header_symbols" | wc -l | tr -d ' ')"
 echo "ABI symbol surface consistent: $symbol_count symbols (+ $test_hook_symbol test hook)"
+
+if [[ "$check_test_hooks" == true ]]; then
+    echo "test-hooks mode: recognized '${test_hook_prefix}*' hooks (excluded from the stable surface)"
+    printf '%s\n' "${rust_test_hooks:-none}"
+fi

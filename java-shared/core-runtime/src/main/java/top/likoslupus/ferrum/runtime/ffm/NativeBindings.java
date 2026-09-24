@@ -51,6 +51,7 @@ public final class NativeBindings implements AutoCloseable {
     private final Map<String, MethodHandle> moduleSymbols;
     private final @Nullable NbtBindings nbt;
     private final @Nullable CodecBindings codec;
+    private final @Nullable PaletteBindings palette;
 
     private NativeBindings(
             Arena arena,
@@ -60,7 +61,8 @@ public final class NativeBindings implements AutoCloseable {
             MethodHandle selftest,
             Map<String, MethodHandle> moduleSymbols,
             @Nullable NbtBindings nbt,
-            @Nullable CodecBindings codec
+            @Nullable CodecBindings codec,
+            @Nullable PaletteBindings palette
     ) {
         this.arena = arena;
         this.abiVersion = abiVersion;
@@ -70,6 +72,7 @@ public final class NativeBindings implements AutoCloseable {
         this.moduleSymbols = moduleSymbols;
         this.nbt = nbt;
         this.codec = codec;
+        this.palette = palette;
     }
 
     /**
@@ -131,7 +134,8 @@ public final class NativeBindings implements AutoCloseable {
                     selftest,
                     Map.copyOf(modules),
                     nbtBindings(modules),
-                    codecBindings(modules)
+                    codecBindings(modules),
+                    paletteBindings(modules)
             );
         } catch (RuntimeException | Error throwable) {
             arena.close();
@@ -173,6 +177,14 @@ public final class NativeBindings implements AutoCloseable {
         return decompress == null || compress == null
                 ? null
                 : new CodecBindings(decompress, compress);
+    }
+
+    private static @Nullable PaletteBindings paletteBindings(Map<String, MethodHandle> modules) {
+        var unpack = modules.get("ferrum_palette_unpack");
+        var pack = modules.get("ferrum_palette_pack");
+        return unpack == null || pack == null
+                ? null
+                : new PaletteBindings(unpack, pack);
     }
 
     private static Map<String, FunctionDescriptor> moduleDescriptors() {
@@ -424,6 +436,15 @@ public final class NativeBindings implements AutoCloseable {
      */
     public @Nullable CodecBindings codec() {
         return codec;
+    }
+
+    /**
+     * Returns the typed palette bindings.
+     *
+     * @return the palette bindings, or {@code null} when the symbols are not present
+     */
+    public @Nullable PaletteBindings palette() {
+        return palette;
     }
 
     /**

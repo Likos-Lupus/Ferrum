@@ -30,6 +30,6 @@ tasks.withType<Test>().configureEach {
 
 tasks.named<Test>("test") {
     useJUnitPlatform {
-        excludeTags("native")
+        excludeTags("native", "benchmark", "spike")
     }
 }

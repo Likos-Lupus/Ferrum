@@ -311,6 +311,9 @@ cmake-build-*/
 *.map
 *.exp
 
+# Test golden corpora that use the .map extension
+!native/ferrum-native/tests/golden/palette-remap/*.map
+
 # Executables
 *.exe
 *.out

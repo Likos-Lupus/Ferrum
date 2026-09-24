@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "Ferrum palette bulk pack/unpack native fast path.",
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "top.likoslupus.ferrum.palette.fabric.FerrumPaletteFabric"
+    ]
+  },
+  "mixins": [
+    "ferrum-palette.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "${minecraft}",
+    "java": ">=25"
+  }
+}
