@@ -49,6 +49,10 @@ dependencies {
         catalogLibrary("errorprone-annotations").get()
     )
     add(
+        "testCompileOnly",
+        catalogLibrary("errorprone-annotations").get()
+    )
+    add(
         "compileOnlyApi",
         catalogLibrary("slf4j-api").get()
     )

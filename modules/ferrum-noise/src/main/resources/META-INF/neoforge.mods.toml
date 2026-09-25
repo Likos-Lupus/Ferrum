@@ -1,0 +1,12 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
+description = "Ferrum noise leaf and grid batch native fast path."
+
+[[mixins]]
+config = "ferrum-noise.mixins.json"

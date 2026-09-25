@@ -39,5 +39,19 @@ test = false
 doc = false
 bench = false
 
+[[bin]]
+name = "noise_create"
+path = "fuzz_targets/noise_create.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "noise_batch"
+path = "fuzz_targets/noise_batch.rs"
+test = false
+doc = false
+bench = false
+
 [profile.release]
 debug = 1

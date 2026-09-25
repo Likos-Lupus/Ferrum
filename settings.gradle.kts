@@ -41,6 +41,7 @@ include(":modules:ferrum-core")
 include(":modules:ferrum-nbt")
 include(":modules:ferrum-codec")
 include(":modules:ferrum-palette")
+include(":modules:ferrum-noise")
 
 stonecutter {
     create(":modules:ferrum-core") {
@@ -92,6 +93,22 @@ stonecutter {
     }
 
     create(":modules:ferrum-palette") {
+        fun target(
+            projectName: String,
+            vararg loaders: String,
+            version: String = projectName
+        ) {
+            loaders.forEach {
+                version("$projectName-$it", version).buildscript("build.$it.gradle.kts")
+            }
+        }
+
+        target("1.21.1", "fabric", "neoforge")
+        target("26.1.2", "fabric", "neoforge")
+        vcsVersion = "26.1.2-fabric"
+    }
+
+    create(":modules:ferrum-noise") {
         fun target(
             projectName: String,
             vararg loaders: String,

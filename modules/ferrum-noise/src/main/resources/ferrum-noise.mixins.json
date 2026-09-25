@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "top.likoslupus.ferrum.noise.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "ImprovedNoiseAccessor",
+    "PerlinNoiseAccessor",
+    "NormalNoiseAccessor",
+    "DensityFunctionsNoiseAccessor",
+    "DensityFunctionsNoiseMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

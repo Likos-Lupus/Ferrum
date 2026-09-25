@@ -270,6 +270,19 @@ public final class NativeRuntime implements AutoCloseable {
                 : null;
     }
 
+    /**
+     * Returns the typed noise bindings.
+     *
+     * @return the noise bindings, or {@code null} when native is not available or the symbols are
+     * absent
+     */
+    public @Nullable NoiseBindings noise() {
+        var current = bindings;
+        return current != null && state.isAvailable()
+                ? current.noise()
+                : null;
+    }
+
     @Override
     public void close() {
         var current = bindings;

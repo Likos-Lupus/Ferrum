@@ -21,6 +21,7 @@ class NativeBindingsTest {
             "ferrum_lz4_block_stream_compress",
             "ferrum_palette_unpack",
             "ferrum_palette_pack",
+            "ferrum_noise_create",
             "ferrum_noise_batch",
             "ferrum_noise_destroy"
     );
@@ -51,14 +52,14 @@ class NativeBindingsTest {
 
     @Test
     @Tag("native")
-    void moduleStubReturnsUnsupported() {
+    void noiseDestroyRejectsUnknownHandle() {
         var library = NativeLibraryLocator.find();
         assumeTrue(library != null, "native library not built");
 
         try (var bindings = NativeBindings.load(requireNonNull(library))) {
             var handle = requireNonNull(bindings.symbol("ferrum_noise_destroy"));
             var status = (int) handle.invokeExact(0L);
-            assertEquals(NativeStatus.UNSUPPORTED, NativeStatus.fromCode(status));
+            assertEquals(NativeStatus.INVALID_ARGUMENT, NativeStatus.fromCode(status));
         } catch (Throwable throwable) {
             throw new AssertionError("ferrum_noise_destroy invocation failed", throwable);
         }

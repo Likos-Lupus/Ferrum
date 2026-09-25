@@ -38,6 +38,7 @@ jobs:
           :modules:ferrum-nbt:chiseledCheck
           :modules:ferrum-codec:chiseledCheck
           :modules:ferrum-palette:chiseledCheck
+          :modules:ferrum-noise:chiseledCheck
 
   rust:
     name: Rust checks
@@ -84,6 +85,8 @@ jobs:
           :modules:ferrum-codec:26.1.2-fabric:nativeTest
           :modules:ferrum-palette:26.1.2-fabric:nativeTest
           :modules:ferrum-palette:1.21.1-fabric:nativeTest
+          :modules:ferrum-noise:26.1.2-fabric:nativeTest
+          :modules:ferrum-noise:1.21.1-fabric:nativeTest
 
   nbt-golden:
     name: NBT golden corpus is reproducible
@@ -142,6 +145,44 @@ jobs:
           native/ferrum-native/tests/golden/palette
           native/ferrum-native/tests/golden/palette-remap
 
+  noise-golden:
+    name: Noise golden corpus is reproducible
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: Regenerate the noise descriptor corpus
+        run: ./gradlew --no-daemon :modules:ferrum-noise:26.1.2-fabric:generateNoiseGolden
+      - name: Fail if the committed corpus drifted
+        run: git diff --exit-code native/ferrum-native/tests/golden/noise
+
+  noise-raw-bits:
+    name: Noise raw bits (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-14 ]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: native/ferrum-native
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions-rust-lang/setup-rust-toolchain@v2
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native/ferrum-native
+      - name: Raw-bits golden corpus on this architecture
+        run: cargo test --locked --features test-hooks --test noise_golden
+
   fuzz:
     name: Fuzz (nightly)
     if: github.event_name == 'schedule'
@@ -166,6 +207,10 @@ jobs:
         run: cargo +nightly fuzz run palette_unpack -- -max_total_time=60 -rss_limit_mb=2048
       - name: Fuzz the palette pack
         run: cargo +nightly fuzz run palette_pack -- -max_total_time=60 -rss_limit_mb=2048
+      - name: Fuzz the noise descriptor parser
+        run: cargo +nightly fuzz run noise_create -- -max_total_time=60 -rss_limit_mb=2048
+      - name: Fuzz the noise batch evaluator
+        run: cargo +nightly fuzz run noise_batch -- -max_total_time=60 -rss_limit_mb=2048
 
   abi-drift:
     name: ABI drift check
@@ -199,3 +244,4 @@ jobs:
           :modules:ferrum-nbt:chiseledBuildAndCollect
           :modules:ferrum-codec:chiseledBuildAndCollect
           :modules:ferrum-palette:chiseledBuildAndCollect
+          :modules:ferrum-noise:chiseledBuildAndCollect

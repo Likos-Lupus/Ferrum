@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "Ferrum noise leaf and grid batch native fast path.",
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "top.likoslupus.ferrum.noise.fabric.FerrumNoiseFabric"
+    ]
+  },
+  "mixins": [
+    "ferrum-noise.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "${minecraft}",
+    "java": ">=25"
+  }
+}

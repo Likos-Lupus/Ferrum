@@ -59,6 +59,7 @@ together with this file. Accepted records are superseded by new ADRs, never edit
 | [0014](docs/adr/0014-codec-lz4-stream.md)                         | Codec LZ4 block-stream implementation and gating                                  |
 | [0015](docs/adr/0015-palette-bit-storage-layout.md)               | Palette bulk pack/unpack uses the `SimpleBitStorage` layout                       |
 | [0016](docs/adr/0016-production-fused-palette-remap.md)           | Production fused palette remap (proposed, from the F-055 spike)                   |
+| [0017](docs/adr/0017-noise-descriptor-and-leaf-grid.md)           | Noise descriptor, handle ABI, and leaf-grid batching                              |
 
 ---
 

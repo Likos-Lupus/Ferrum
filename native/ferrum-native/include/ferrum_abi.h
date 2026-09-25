@@ -108,6 +108,10 @@ int32_t ferrum_palette_pack(
     uint32_t bits,
     uint64_t* out_data, size_t out_len);
 
+int32_t ferrum_noise_create(
+    const uint8_t* descriptor, size_t descriptor_len,
+    uint64_t* out_handle);
+
 int32_t ferrum_noise_batch(
     uint64_t noise_handle,
     const double* xs, const double* ys, const double* zs,

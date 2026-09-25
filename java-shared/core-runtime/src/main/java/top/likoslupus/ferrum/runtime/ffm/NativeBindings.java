@@ -52,6 +52,7 @@ public final class NativeBindings implements AutoCloseable {
     private final @Nullable NbtBindings nbt;
     private final @Nullable CodecBindings codec;
     private final @Nullable PaletteBindings palette;
+    private final @Nullable NoiseBindings noise;
 
     private NativeBindings(
             Arena arena,
@@ -62,7 +63,8 @@ public final class NativeBindings implements AutoCloseable {
             Map<String, MethodHandle> moduleSymbols,
             @Nullable NbtBindings nbt,
             @Nullable CodecBindings codec,
-            @Nullable PaletteBindings palette
+            @Nullable PaletteBindings palette,
+            @Nullable NoiseBindings noise
     ) {
         this.arena = arena;
         this.abiVersion = abiVersion;
@@ -73,6 +75,7 @@ public final class NativeBindings implements AutoCloseable {
         this.nbt = nbt;
         this.codec = codec;
         this.palette = palette;
+        this.noise = noise;
     }
 
     /**
@@ -135,7 +138,8 @@ public final class NativeBindings implements AutoCloseable {
                     Map.copyOf(modules),
                     nbtBindings(modules),
                     codecBindings(modules),
-                    paletteBindings(modules)
+                    paletteBindings(modules),
+                    noiseBindings(modules)
             );
         } catch (RuntimeException | Error throwable) {
             arena.close();
@@ -185,6 +189,15 @@ public final class NativeBindings implements AutoCloseable {
         return unpack == null || pack == null
                 ? null
                 : new PaletteBindings(unpack, pack);
+    }
+
+    private static @Nullable NoiseBindings noiseBindings(Map<String, MethodHandle> modules) {
+        var create = modules.get("ferrum_noise_create");
+        var batch = modules.get("ferrum_noise_batch");
+        var destroy = modules.get("ferrum_noise_destroy");
+        return create == null || batch == null || destroy == null
+                ? null
+                : new NoiseBindings(create, batch, destroy);
     }
 
     private static Map<String, FunctionDescriptor> moduleDescriptors() {
@@ -289,6 +302,15 @@ public final class NativeBindings implements AutoCloseable {
                         ints,
                         address,
                         longs
+                )
+        );
+        descriptors.put(
+                "ferrum_noise_create",
+                FunctionDescriptor.of(
+                        status,
+                        address,
+                        longs,
+                        address
                 )
         );
         descriptors.put(
@@ -445,6 +467,15 @@ public final class NativeBindings implements AutoCloseable {
      */
     public @Nullable PaletteBindings palette() {
         return palette;
+    }
+
+    /**
+     * Returns the typed noise bindings.
+     *
+     * @return the noise bindings, or {@code null} when the symbols are not present
+     */
+    public @Nullable NoiseBindings noise() {
+        return noise;
     }
 
     /**
