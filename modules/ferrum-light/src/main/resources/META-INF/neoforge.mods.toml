@@ -1,0 +1,12 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
+description = "Ferrum block-light batch native fast path."
+
+[[mixins]]
+config = "ferrum-light.mixins.json"

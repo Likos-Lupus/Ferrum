@@ -39,6 +39,7 @@ jobs:
           :modules:ferrum-codec:chiseledCheck
           :modules:ferrum-palette:chiseledCheck
           :modules:ferrum-noise:chiseledCheck
+          :modules:ferrum-light:chiseledCheck
 
   rust:
     name: Rust checks
@@ -87,6 +88,8 @@ jobs:
           :modules:ferrum-palette:1.21.1-fabric:nativeTest
           :modules:ferrum-noise:26.1.2-fabric:nativeTest
           :modules:ferrum-noise:1.21.1-fabric:nativeTest
+          :modules:ferrum-light:26.1.2-fabric:nativeTest
+          :modules:ferrum-light:1.21.1-fabric:nativeTest
 
   nbt-golden:
     name: NBT golden corpus is reproducible
@@ -212,6 +215,10 @@ jobs:
       - name: Fuzz the noise batch evaluator
         run: cargo +nightly fuzz run noise_batch -- -max_total_time=60 -rss_limit_mb=2048
 
+      - name: Fuzz light_block_batch
+        working-directory: native/ferrum-native/fuzz
+        run: cargo +nightly fuzz run light_block_batch -- -max_total_time=60 -rss_limit_mb=2048
+
   abi-drift:
     name: ABI drift check
     runs-on: ubuntu-latest
@@ -245,3 +252,4 @@ jobs:
           :modules:ferrum-codec:chiseledBuildAndCollect
           :modules:ferrum-palette:chiseledBuildAndCollect
           :modules:ferrum-noise:chiseledBuildAndCollect
+          :modules:ferrum-light:chiseledBuildAndCollect

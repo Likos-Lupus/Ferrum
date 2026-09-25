@@ -53,5 +53,12 @@ test = false
 doc = false
 bench = false
 
+[[bin]]
+name = "light_block_batch"
+path = "fuzz_targets/light_block_batch.rs"
+test = false
+doc = false
+bench = false
+
 [profile.release]
 debug = 1

@@ -283,6 +283,19 @@ public final class NativeRuntime implements AutoCloseable {
                 : null;
     }
 
+    /**
+     * Returns the typed light bindings.
+     *
+     * @return the light bindings, or {@code null} when native is not available or the symbols are
+     * absent
+     */
+    public @Nullable LightBindings light() {
+        var current = bindings;
+        return current != null && state.isAvailable()
+                ? current.light()
+                : null;
+    }
+
     @Override
     public void close() {
         var current = bindings;

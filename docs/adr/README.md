@@ -63,3 +63,4 @@ All files in this directory are written in English.
 | [0015](0015-palette-bit-storage-layout.md)               | Palette bulk pack/unpack uses the `SimpleBitStorage` layout | Accepted |
 | [0016](0016-production-fused-palette-remap.md)           | Production fused palette remap                              | Proposed |
 | [0017](0017-noise-descriptor-and-leaf-grid.md)           | Noise descriptor, handle ABI, and leaf-grid batching        | Accepted |
+| [0018](0018-block-light-batch-abi.md)                    | Block-light batch ABI and versioned snapshot blob           | Accepted |

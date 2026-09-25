@@ -120,6 +120,11 @@ int32_t ferrum_noise_batch(
 
 int32_t ferrum_noise_destroy(uint64_t noise_handle);
 
+int32_t ferrum_light_block_batch(
+    const uint8_t* in, size_t in_len,
+    uint8_t* out, size_t out_cap,
+    size_t* out_written);
+
 #ifdef __cplusplus
 }
 #endif

@@ -23,7 +23,8 @@ class NativeBindingsTest {
             "ferrum_palette_pack",
             "ferrum_noise_create",
             "ferrum_noise_batch",
-            "ferrum_noise_destroy"
+            "ferrum_noise_destroy",
+            "ferrum_light_block_batch"
     );
 
     @Test

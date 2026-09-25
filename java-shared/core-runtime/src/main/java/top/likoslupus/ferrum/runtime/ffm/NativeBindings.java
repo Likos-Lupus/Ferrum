@@ -3,10 +3,7 @@ package top.likoslupus.ferrum.runtime.ffm;
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import org.jspecify.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
@@ -53,6 +50,7 @@ public final class NativeBindings implements AutoCloseable {
     private final @Nullable CodecBindings codec;
     private final @Nullable PaletteBindings palette;
     private final @Nullable NoiseBindings noise;
+    private final @Nullable LightBindings light;
 
     private NativeBindings(
             Arena arena,
@@ -64,7 +62,8 @@ public final class NativeBindings implements AutoCloseable {
             @Nullable NbtBindings nbt,
             @Nullable CodecBindings codec,
             @Nullable PaletteBindings palette,
-            @Nullable NoiseBindings noise
+            @Nullable NoiseBindings noise,
+            @Nullable LightBindings light
     ) {
         this.arena = arena;
         this.abiVersion = abiVersion;
@@ -76,6 +75,7 @@ public final class NativeBindings implements AutoCloseable {
         this.codec = codec;
         this.palette = palette;
         this.noise = noise;
+        this.light = light;
     }
 
     /**
@@ -139,7 +139,8 @@ public final class NativeBindings implements AutoCloseable {
                     nbtBindings(modules),
                     codecBindings(modules),
                     paletteBindings(modules),
-                    noiseBindings(modules)
+                    noiseBindings(modules),
+                    lightBindings(modules)
             );
         } catch (RuntimeException | Error throwable) {
             arena.close();
@@ -198,6 +199,13 @@ public final class NativeBindings implements AutoCloseable {
         return create == null || batch == null || destroy == null
                 ? null
                 : new NoiseBindings(create, batch, destroy);
+    }
+
+    private static @Nullable LightBindings lightBindings(Map<String, MethodHandle> modules) {
+        var blockBatch = modules.get("ferrum_light_block_batch");
+        return Optional.ofNullable(blockBatch)
+                .map(LightBindings::new)
+                .orElse(null);
     }
 
     private static Map<String, FunctionDescriptor> moduleDescriptors() {
@@ -329,6 +337,17 @@ public final class NativeBindings implements AutoCloseable {
         descriptors.put(
                 "ferrum_noise_destroy",
                 FunctionDescriptor.of(status, longs)
+        );
+        descriptors.put(
+                "ferrum_light_block_batch",
+                FunctionDescriptor.of(
+                        status,
+                        address,
+                        longs,
+                        address,
+                        longs,
+                        address
+                )
         );
 
         descriptors.put(
@@ -476,6 +495,15 @@ public final class NativeBindings implements AutoCloseable {
      */
     public @Nullable NoiseBindings noise() {
         return noise;
+    }
+
+    /**
+     * Returns the typed light bindings.
+     *
+     * @return the light bindings, or {@code null} when the symbols are not present
+     */
+    public @Nullable LightBindings light() {
+        return light;
     }
 
     /**

@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "top.likoslupus.ferrum.light.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "LightEngineAccessor",
+    "LayerLightSectionStorageAccessor",
+    "LightEngineMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
