@@ -16,13 +16,13 @@ pub fn unpack(data: &[u64], bits: u32, value_count: usize, out: &mut [u32]) -> i
     if !layout::is_valid_bits(bits) {
         return FERRUM_ERR_INVALID_ARGUMENT;
     }
-    
+
     let per_long = layout::values_per_long(bits);
     let required = value_count.div_ceil(per_long);
     if data.len() < required {
         return FERRUM_ERR_INVALID_ARGUMENT;
     }
-    
+
     if out.len() < value_count {
         return FERRUM_ERR_BUFFER_TOO_SMALL;
     }

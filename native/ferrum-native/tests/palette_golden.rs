@@ -3,19 +3,11 @@ use std::path::{Path, PathBuf};
 
 use ferrum::palette::{layout, pack, unpack};
 
-fn read_meta(path: &Path) -> Option<(u32, usize)> {
-    let text = fs::read_to_string(path).ok()?;
-    let mut bits = None;
-    let mut size = None;
-    for line in text.lines() {
-        if let Some(value) = line.strip_prefix("bits=") {
-            bits = value.trim().parse().ok();
-        }
-        if let Some(value) = line.strip_prefix("size=") {
-            size = value.trim().parse().ok();
-        }
-    }
-    Some((bits?, size?))
+/// Parses a `b<bits>-s<size>` case stem.
+fn parse_name(stem: &str) -> Option<(u32, usize)> {
+    let rest = stem.strip_prefix('b')?;
+    let (bits, size) = rest.split_once("-s")?;
+    Some((bits.parse().ok()?, size.parse().ok()?))
 }
 
 fn read_u64_le(path: &Path) -> Vec<u64> {
@@ -54,13 +46,14 @@ fn java_golden_corpus_matches() {
         if path.extension().and_then(|value| value.to_str()) != Some("raw") {
             continue;
         }
+
         let name = path
             .file_stem()
             .and_then(|value| value.to_str())
             .expect("file stem")
             .to_string();
-        let (bits, size) = read_meta(&directory.join(format!("{name}.meta")))
-            .unwrap_or_else(|| panic!("missing meta for {name}"));
+        let (bits, size) =
+            parse_name(&name).unwrap_or_else(|| panic!("bad palette case name: {name}"));
 
         let raw = read_u64_le(&path);
         let values = read_u32_le(&directory.join(format!("{name}.values")));

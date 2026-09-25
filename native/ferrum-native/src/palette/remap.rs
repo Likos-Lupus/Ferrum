@@ -34,15 +34,15 @@ pub fn remap_fused(
     let per_out = layout::values_per_long(bits_out);
     let required_in = value_count.div_ceil(per_in);
     let required_out = value_count.div_ceil(per_out);
-    
+
     if data.len() < required_in {
         return FERRUM_ERR_INVALID_ARGUMENT;
     }
-    
+
     if out.len() < required_out {
         return FERRUM_ERR_BUFFER_TOO_SMALL;
     }
-    
+
     if value_count == 0 {
         return FERRUM_OK;
     }
@@ -64,7 +64,7 @@ pub fn remap_fused(
             Some(value) => u64::from(*value),
             None => return FERRUM_ERR_INVALID_ARGUMENT,
         };
-        
+
         if mapped & !mask_out != 0 {
             return FERRUM_ERR_INVALID_ARGUMENT;
         }

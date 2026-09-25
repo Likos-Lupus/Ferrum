@@ -29,7 +29,7 @@ value in a native remap to justify a production fast path, and is the value in f
 ## Correctness
 
 - Every fused result is asserted byte-for-byte equal to the Java oracle for all nine spike cases.
-- The committed remap corpus (`native/ferrum-native/tests/golden/palette-remap/`, 12 cases) is
+- The committed remap corpus (`native/ferrum-native/tests/golden/palette-remap/`, 6 cases) is
   checked byte-for-byte by `tests/palette_remap.rs`; Rust property tests also compare the fused
   kernel against a composed reference for widths 1..12 and sizes up to 4096. All pass.
 

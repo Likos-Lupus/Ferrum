@@ -111,23 +111,16 @@ fn fused_rejects_small_output_and_invalid_widths() {
     );
 }
 
-fn read_meta(path: &Path) -> Option<(u32, usize, u32)> {
-    let text = fs::read_to_string(path).ok()?;
-    let mut bits_in = None;
-    let mut size = None;
-    let mut bits_out = None;
-    for line in text.lines() {
-        if let Some(value) = line.strip_prefix("bitsIn=") {
-            bits_in = value.trim().parse().ok();
-        }
-        if let Some(value) = line.strip_prefix("size=") {
-            size = value.trim().parse().ok();
-        }
-        if let Some(value) = line.strip_prefix("bitsOut=") {
-            bits_out = value.trim().parse().ok();
-        }
-    }
-    Some((bits_in?, size?, bits_out?))
+/// Parses a `b<bitsIn>-b<bitsOut>-s<size>` case stem.
+fn parse_name(name: &str) -> Option<(u32, u32, usize)> {
+    let rest = name.strip_prefix('b')?;
+    let (bits_in, rest) = rest.split_once("-b")?;
+    let (bits_out, size) = rest.split_once("-s")?;
+    Some((
+        bits_in.parse().ok()?,
+        bits_out.parse().ok()?,
+        size.parse().ok()?,
+    ))
 }
 
 fn read_u64_le(path: &Path) -> Vec<u64> {
@@ -170,8 +163,8 @@ fn java_remap_golden_matches() {
             continue;
         };
 
-        let (bits_in, size, bits_out) = read_meta(&directory.join(format!("{name}.meta")))
-            .unwrap_or_else(|| panic!("missing meta for {name}"));
+        let (bits_in, bits_out, size) =
+            parse_name(name).unwrap_or_else(|| panic!("bad remap case name: {name}"));
         let input = read_u64_le(&path);
         let map = read_u32_le(&directory.join(format!("{name}.map")));
         let expected = read_u64_le(&directory.join(format!("{name}.out.raw")));

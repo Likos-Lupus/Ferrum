@@ -17,7 +17,7 @@ pub fn pack(values: &[u32], bits: u32, out: &mut [u64]) -> i32 {
     if !layout::is_valid_bits(bits) {
         return FERRUM_ERR_INVALID_ARGUMENT;
     }
-    
+
     let per_long = layout::values_per_long(bits);
     let required = values.len().div_ceil(per_long);
     if out.len() < required {
@@ -34,10 +34,10 @@ pub fn pack(values: &[u32], bits: u32, out: &mut [u64]) -> i32 {
             if value & !mask != 0 {
                 return FERRUM_ERR_INVALID_ARGUMENT;
             }
-            
+
             packed |= value << (offset * bits as usize);
         }
-        
+
         *word = packed;
         index += in_word;
     }

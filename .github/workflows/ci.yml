@@ -83,6 +83,7 @@ jobs:
           :modules:ferrum-nbt:26.1.2-fabric:nativeTest
           :modules:ferrum-codec:26.1.2-fabric:nativeTest
           :modules:ferrum-palette:26.1.2-fabric:nativeTest
+          :modules:ferrum-palette:1.21.1-fabric:nativeTest
 
   nbt-golden:
     name: NBT golden corpus is reproducible

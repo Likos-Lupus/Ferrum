@@ -137,12 +137,22 @@ tasks.register<Test>("paletteRemapSpike") {
     }
 }
 
+val cleanPaletteGolden = tasks.register<Delete>("cleanPaletteGolden") {
+    group = "verification"
+    description = "Removes the generated palette corpora before regeneration."
+    delete(
+        rootProject.layout.projectDirectory.dir("native/ferrum-native/tests/golden/palette"),
+        rootProject.layout.projectDirectory.dir("native/ferrum-native/tests/golden/palette-remap"),
+    )
+}
+
 tasks.register<Test>("generatePaletteGolden") {
     group = "verification"
     description = "Regenerates the SimpleBitStorage and remap corpora from Java."
     testClassesDirs = sourceSets["test"].output.classesDirs
     classpath = sourceSets["test"].runtimeClasspath
 
+    dependsOn(cleanPaletteGolden)
     useJUnitPlatform()
     filter {
         includeTestsMatching("top.likoslupus.ferrum.palette.*GoldenGeneratorTest")

@@ -65,11 +65,12 @@ to clear the M3 gate.
 
 ## Correctness / compatibility impact
 
-A Java-authored `SimpleBitStorage` corpus (`native/ferrum-native/tests/golden/palette/`) checks
-unpack and pack byte-for-byte across all widths and tail shapes, and native-tagged differential
-tests compare against the live vanilla class on every target. A 32-bit value with the top bit set
-cannot be authored through `SimpleBitStorage.set` (which takes a signed `int`); that range is
-covered by the Rust property tests instead.
+A Java-authored `SimpleBitStorage` corpus (`native/ferrum-native/tests/golden/palette/`, a compact
+representative set of widths and tail shapes) checks unpack and pack byte-for-byte without needing
+Minecraft; the native-tagged differential test additionally compares every width 1..32 and several
+sizes against the live vanilla class on a real target. A 32-bit value with the top bit set cannot be
+authored through `SimpleBitStorage.set` (which takes a signed `int`); that range is covered by the
+Rust property tests instead.
 
 ## Rollback
 

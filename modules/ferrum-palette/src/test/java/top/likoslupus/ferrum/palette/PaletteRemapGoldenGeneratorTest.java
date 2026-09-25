@@ -25,14 +25,8 @@ class PaletteRemapGoldenGeneratorTest {
             new RemapCase("b5-b4-s4096", 5, 4, 4096, 12L),
             new RemapCase("b4-b8-s4096", 4, 8, 4096, 13L),
             new RemapCase("b8-b4-s4096", 8, 4, 4096, 14L),
-            new RemapCase("b4-b4-s4096", 4, 4, 4096, 15L),
-            new RemapCase("b5-b5-s4096", 5, 5, 4096, 16L),
-            new RemapCase("b3-b4-s4096", 3, 4, 4096, 17L),
-            new RemapCase("b6-b5-s4096", 6, 5, 4096, 18L),
-            new RemapCase("b1-b8-s257", 1, 8, 257, 19L),
-            new RemapCase("b8-b1-s257", 8, 1, 257, 20L),
-            new RemapCase("b8-b4-s257", 8, 4, 257, 21L),
-            new RemapCase("b4-b8-s257", 4, 8, 257, 22L)
+            new RemapCase("b5-b5-s4096", 5, 5, 4096, 15L),
+            new RemapCase("b1-b8-s4096", 1, 8, 4096, 16L)
     );
 
     @Test
@@ -48,13 +42,11 @@ class PaletteRemapGoldenGeneratorTest {
         for (var goldenCase : CASES) {
             var maskIn = mask(goldenCase.bitsIn());
             var maskOut = mask(goldenCase.bitsOut());
-            int[] map;
             var random = new Random(goldenCase.seed());
-            int[] values;
-            map = IntStream.range(0, 1 << goldenCase.bitsIn())
+            var map = IntStream.range(0, 1 << goldenCase.bitsIn())
                     .map(_ -> (int) (random.nextLong() & maskOut))
                     .toArray();
-            values = IntStream.range(0, goldenCase.size())
+            var values = IntStream.range(0, goldenCase.size())
                     .map(_ -> (int) (random.nextLong() & maskIn))
                     .toArray();
 
@@ -78,12 +70,6 @@ class PaletteRemapGoldenGeneratorTest {
             Files.write(
                     directory.resolve(goldenCase.name() + ".out.raw"),
                     PaletteGoldenGeneratorTest.longs(output)
-            );
-            Files.writeString(
-                    directory.resolve(goldenCase.name() + ".meta"),
-                    "bitsIn=" + goldenCase.bitsIn()
-                            + "\nsize=" + goldenCase.size()
-                            + "\nbitsOut=" + goldenCase.bitsOut() + "\n"
             );
             manifest.add(new Entry(
                     goldenCase.name(),

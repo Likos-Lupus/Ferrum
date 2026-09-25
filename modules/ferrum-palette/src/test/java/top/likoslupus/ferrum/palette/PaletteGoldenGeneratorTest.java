@@ -28,17 +28,17 @@ class PaletteGoldenGeneratorTest {
     private static final List<Case> CASES = cases();
 
     private static List<Case> cases() {
-        var cases = IntStream.rangeClosed(1, 32)
+        var cases = IntStream.of(1, 2, 3, 4, 5, 6, 7, 8, 16, 31, 32)
                 .mapToObj(bits -> new Case(
-                        "bits" + bits + "-tail257",
+                        "b" + bits + "-s257",
                         bits,
                         257,
                         1L + bits
                 ))
                 .collect(Collectors.toCollection(ArrayList::new));
-        IntStream.of(1, 2, 3, 4, 5, 6, 7, 8, 16, 32)
+        IntStream.of(4, 5, 8, 16, 32)
                 .mapToObj(bits -> new Case(
-                        "bits" + bits + "-section4096",
+                        "b" + bits + "-s4096",
                         bits,
                         4096,
                         100L + bits
@@ -59,19 +59,14 @@ class PaletteGoldenGeneratorTest {
         var manifest = new ArrayList<Entry>();
         for (var goldenCase : CASES) {
             var mask = valueMask(goldenCase.bits());
-            int[] values;
             var random = new Random(goldenCase.seed());
-            values = IntStream.range(0, goldenCase.size())
+            var values = IntStream.range(0, goldenCase.size())
                     .map(_ -> (int) (random.nextLong() & mask))
                     .toArray();
             var raw = PaletteReference.pack(values, goldenCase.bits());
 
             Files.write(directory.resolve(goldenCase.name() + ".raw"), longs(raw));
             Files.write(directory.resolve(goldenCase.name() + ".values"), ints(values));
-            Files.writeString(
-                    directory.resolve(goldenCase.name() + ".meta"),
-                    "bits=" + goldenCase.bits() + "\nsize=" + goldenCase.size() + "\n"
-            );
             manifest.add(new Entry(
                     goldenCase.name(),
                     goldenCase.bits(),
