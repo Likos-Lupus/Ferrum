@@ -296,6 +296,19 @@ public final class NativeRuntime implements AutoCloseable {
                 : null;
     }
 
+    /**
+     * Returns the typed collide bindings.
+     *
+     * @return the collide bindings, or {@code null} when native is not available or the symbols are
+     * absent
+     */
+    public @Nullable CollideBindings collide() {
+        var current = bindings;
+        return current != null && state.isAvailable()
+                ? current.collide()
+                : null;
+    }
+
     @Override
     public void close() {
         var current = bindings;

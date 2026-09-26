@@ -60,5 +60,19 @@ test = false
 doc = false
 bench = false
 
+[[bin]]
+name = "collide_clip"
+path = "fuzz_targets/collide_clip.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "collide_sweep"
+path = "fuzz_targets/collide_sweep.rs"
+test = false
+doc = false
+bench = false
+
 [profile.release]
 debug = 1

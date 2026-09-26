@@ -24,7 +24,9 @@ class NativeBindingsTest {
             "ferrum_noise_create",
             "ferrum_noise_batch",
             "ferrum_noise_destroy",
-            "ferrum_light_block_batch"
+            "ferrum_light_block_batch",
+            "ferrum_collide_aabb_clip",
+            "ferrum_collide_sweep"
     );
 
     @Test

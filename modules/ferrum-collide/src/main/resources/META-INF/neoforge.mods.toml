@@ -1,0 +1,12 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
+description = "Ferrum batch AABB clip and voxel-shape sweep native fast paths."
+
+[[mixins]]
+config = "ferrum-collide.mixins.json"

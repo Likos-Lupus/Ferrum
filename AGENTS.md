@@ -61,6 +61,7 @@ together with this file. Accepted records are superseded by new ADRs, never edit
 | [0016](docs/adr/0016-production-fused-palette-remap.md)           | Production fused palette remap (proposed, from the F-055 spike)                   |
 | [0017](docs/adr/0017-noise-descriptor-and-leaf-grid.md)           | Noise descriptor, handle ABI, and leaf-grid batching                              |
 | [0018](docs/adr/0018-block-light-batch-abi.md)                    | Block-light batch ABI and versioned snapshot blob                                 |
+| [0019](docs/adr/0019-collide-batch-abi.md)                        | Collide batch ABI (AABB clip and VoxelShape sweep)                                |
 
 ---
 

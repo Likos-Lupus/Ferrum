@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "top.likoslupus.ferrum.collide.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "VoxelShapeAccessor",
+    "AabbClipMixin",
+    "EntityCollideMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

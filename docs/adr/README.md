@@ -64,3 +64,4 @@ All files in this directory are written in English.
 | [0016](0016-production-fused-palette-remap.md)           | Production fused palette remap                              | Proposed |
 | [0017](0017-noise-descriptor-and-leaf-grid.md)           | Noise descriptor, handle ABI, and leaf-grid batching        | Accepted |
 | [0018](0018-block-light-batch-abi.md)                    | Block-light batch ABI and versioned snapshot blob           | Accepted |
+| [0019](0019-collide-batch-abi.md)                        | Collide batch ABI (AABB clip and VoxelShape sweep)          | Accepted |

@@ -125,6 +125,16 @@ int32_t ferrum_light_block_batch(
     uint8_t* out, size_t out_cap,
     size_t* out_written);
 
+int32_t ferrum_collide_aabb_clip(
+    const uint8_t* in, size_t in_len,
+    uint8_t* out, size_t out_cap,
+    size_t* out_written);
+
+int32_t ferrum_collide_sweep(
+    const uint8_t* in, size_t in_len,
+    uint8_t* out, size_t out_cap,
+    size_t* out_written);
+
 #ifdef __cplusplus
 }
 #endif

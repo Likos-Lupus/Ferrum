@@ -51,6 +51,7 @@ public final class NativeBindings implements AutoCloseable {
     private final @Nullable PaletteBindings palette;
     private final @Nullable NoiseBindings noise;
     private final @Nullable LightBindings light;
+    private final @Nullable CollideBindings collide;
 
     private NativeBindings(
             Arena arena,
@@ -63,7 +64,8 @@ public final class NativeBindings implements AutoCloseable {
             @Nullable CodecBindings codec,
             @Nullable PaletteBindings palette,
             @Nullable NoiseBindings noise,
-            @Nullable LightBindings light
+            @Nullable LightBindings light,
+            @Nullable CollideBindings collide
     ) {
         this.arena = arena;
         this.abiVersion = abiVersion;
@@ -76,6 +78,7 @@ public final class NativeBindings implements AutoCloseable {
         this.palette = palette;
         this.noise = noise;
         this.light = light;
+        this.collide = collide;
     }
 
     /**
@@ -140,7 +143,8 @@ public final class NativeBindings implements AutoCloseable {
                     codecBindings(modules),
                     paletteBindings(modules),
                     noiseBindings(modules),
-                    lightBindings(modules)
+                    lightBindings(modules),
+                    collideBindings(modules)
             );
         } catch (RuntimeException | Error throwable) {
             arena.close();
@@ -206,6 +210,14 @@ public final class NativeBindings implements AutoCloseable {
         return Optional.ofNullable(blockBatch)
                 .map(LightBindings::new)
                 .orElse(null);
+    }
+
+    private static @Nullable CollideBindings collideBindings(Map<String, MethodHandle> modules) {
+        var aabbClip = modules.get("ferrum_collide_aabb_clip");
+        var sweep = modules.get("ferrum_collide_sweep");
+        return aabbClip == null || sweep == null
+                ? null
+                : new CollideBindings(aabbClip, sweep);
     }
 
     private static Map<String, FunctionDescriptor> moduleDescriptors() {
@@ -340,6 +352,28 @@ public final class NativeBindings implements AutoCloseable {
         );
         descriptors.put(
                 "ferrum_light_block_batch",
+                FunctionDescriptor.of(
+                        status,
+                        address,
+                        longs,
+                        address,
+                        longs,
+                        address
+                )
+        );
+        descriptors.put(
+                "ferrum_collide_aabb_clip",
+                FunctionDescriptor.of(
+                        status,
+                        address,
+                        longs,
+                        address,
+                        longs,
+                        address
+                )
+        );
+        descriptors.put(
+                "ferrum_collide_sweep",
                 FunctionDescriptor.of(
                         status,
                         address,
@@ -504,6 +538,15 @@ public final class NativeBindings implements AutoCloseable {
      */
     public @Nullable LightBindings light() {
         return light;
+    }
+
+    /**
+     * Returns the typed collide bindings.
+     *
+     * @return the collide bindings, or {@code null} when the symbols are not present
+     */
+    public @Nullable CollideBindings collide() {
+        return collide;
     }
 
     /**
